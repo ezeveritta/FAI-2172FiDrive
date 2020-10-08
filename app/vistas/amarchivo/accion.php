@@ -7,6 +7,11 @@
 
 $Titulo = "Alta-Modificación de Archivo"; 
 include_once("../estructura/cabecera.php");
+
+include_once("../controladores/AmarchivoControl.php");
+
+$Control = new AmarchivoControl();
+
 ?>
 
 <div class="contain">

@@ -10,15 +10,11 @@
     
     
     <!-- Bootstrap -->
-    <script src="../../../publico/js/jquery/jquery-3.5.1.min.js"></script>
-    <script src="../../../publico/js/popper/popper.min.js"></script>
-    <script src="../../../publico/js/bootstrap/bootstrap.min.js"></script>
-    <script src="../../../publico/js/bootstrap/bootstrapValidator.js"></script>
-
     <script src="../../../publico/js/validator.js"></script>
 
     <script>
     $(document).ready(function(){
+
         // Cambiar uso del input "contraseña"
 
         $("#proteger").click(function(){
@@ -30,7 +26,12 @@
               $("#contraseña").removeAttr('disabled');
             }
         });
-    });
+
+        // Integrar editor texto summernote
+        $('#descripcion').summernote({
+          airMode: true
+        });
+      });
     </script>
 </body>
 </html>

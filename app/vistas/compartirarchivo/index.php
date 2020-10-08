@@ -5,8 +5,13 @@
  * Fecha: 23/09/2020
  */
 
-$Titulo = "Alta-Mod Archivo"; 
+$Titulo = "Compartir Archivo"; 
 include_once("../estructura/cabecera.php");
+
+$hayArchivo = isset($_POST["archivo"]);
+if ($hayArchivo)
+    $file = $_POST["archivo"];
+
 ?>
 <!-- Contenido -->
 <div class="col-md-10">
@@ -20,7 +25,7 @@ include_once("../estructura/cabecera.php");
 
                         <div class="form-group mt-2 col-sm-6">
                             <h6><label class="">Nombre de Archivo</label></h6>
-                            <div class="border rounded form-control"><b>1234.png</b></div>
+                            <div class="border rounded form-control"><b><?php echo ($hayArchivo) ? $file : "1234.png"?></b></div>
                         </div>
 
                         <div class="form-group mt-2 col-sm-6">

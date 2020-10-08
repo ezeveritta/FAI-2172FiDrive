@@ -18,6 +18,53 @@ function data_submitted() {
 
 }
 
+function tipo_archivo($ext)
+{
+	$salida = false;
+	if ($ext == 'jpg' || $ext == 'png' || $ext == 'jpeg' || $ext == 'gif')
+	{
+		$salida = 'imagen';
+	} elseif ($ext == 'doc' || $ext == 'docm' || $ext == 'docx' || $ext == 'jpg')
+	{
+		$salida = 'documento';
+	} elseif ($ext == 'pdf')
+	{
+		$salida = 'pdf';
+	} elseif ($ext == 'xlm' || $ext == 'xlms' || $ext == 'xlsb' || $ext == 'xls')
+	{
+		$salida = 'xlm';
+	} elseif ($ext == 'zip' || $ext == 'rar')
+	{
+		$salida = 'zip';
+	}
+
+	return $salida;
+}
+
+function icono_archivo($tipo)
+{
+	$salida = "nan";
+	switch ($tipo)
+	{
+		case "imagen":
+			$salida = "image";
+			break;
+		case "documento":
+			$salida = "word";
+			break;
+		case "pdf":
+			$salida = "pdf";
+			break;
+		case "xls":
+			$salida = "xls";
+			break;
+		case "zip":
+			$salida = "archive";
+			break;
+	}
+	return $salida;
+}
+
 
 spl_autoload_register(function ($clase) {
 	echo "Cargamos la clase  ".$clase."<br>" ;
