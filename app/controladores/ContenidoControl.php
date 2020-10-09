@@ -5,23 +5,15 @@
  * Fecha: 07/10/2020
  */
 
- //  amarchivo.php
- //  Nombre del Archivo no debe quedar vació.
- //  La descripción del Archivo, es contenido enriquecido, buscar un editor para cargarlo
- //  Agregar siempre la siguiente descripción por defecto:  Esta es una descripción genérica, si lo necesita la puede cambiar.
- //  El usuario debe ser Seleccionado
- //  El icono, debería ser sugerido teniendo en cuenta la extensión del archivo seleccionado. Todo esto usado JavaScript.
- //  Si el campo Clave, es igual a cero, al submitir el formulario, se debe enviar el parámetro accion = Alta, caso contrario debe enviar en el parámetro accion = Modificar
-
 class ContenidoControl
 {
     /**
-     * Esta función
+     * Esta función crea una carpeta en la ruta pasada por parametro y el nombre.
      * @param array $datos Contiene todos los datos provenientes del formulario
      * 
      * @return boolean
      */
-    public function crearCarpeta($datos)
+    public static function crearCarpeta($datos)
     {
         $operacion = false;
         $nombre = $datos["nombre"];
@@ -36,5 +28,38 @@ class ContenidoControl
         }
 
         return $operacion;
+    }
+
+    /**
+     * Esta función obtiene todas las carpetas y archivos de una carpeta
+     * @param array $datos Contiene la información de la carpeta actual
+     * 
+     * @return boolean
+     */
+    public static function abrirDirectorio($ruta)
+    {
+        $respuesta = false;
+        $ruta = '../../../' . $ruta . '/';
+
+        $direccion = opendir($ruta);
+        $archivos = array();
+        $carpetas = array();
+
+        // Obtener listado de carpetas y archivos
+        while (($temp = readdir($direccion)) !== false)
+        {
+            if ($temp !== "." && $temp !== ".." && !is_dir($ruta.'/'.$temp))
+                array_push($archivos, $temp);
+            if ($temp !== "." && $temp !== ".." && is_dir($ruta.'/'.$temp))
+                array_push($carpetas, $temp);
+        }
+
+        // Verifico si la carpeta está vacía o tiene contenido
+        if (count($archivos) > 0 || count($carpetas) > 0)
+        {
+            $respuesta = ["carpetas" => $carpetas, "archivos" => $archivos];
+        } 
+
+        return $respuesta;
     }
 }
