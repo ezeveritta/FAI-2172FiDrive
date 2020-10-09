@@ -58,8 +58,8 @@ $contenido = ContenidoControl::abrirDirectorio($ruta);
                             </li>
                             <!-- Cargar Archivo -->
                             <li class="nav-item">
-                                <form action="../amarchivo" method="post">
-                                    <input type="hidden" name="ruta" value="archivos">
+                                <form action="../amarchivo/index.php" method="post">
+                                    <input type="hidden" name="ruta" value="<?php echo $ruta ?>">
                                     <input type="hidden" name="clave" value="0">
                                     <button type="submit" class="btn btn-default btn-sm ml-3">Subir Archivo</button>
                                 </form>

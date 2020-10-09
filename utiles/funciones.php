@@ -50,16 +50,16 @@ function icono_archivo($tipo)
 			$salida = "image";
 			break;
 		case "documento":
-			$salida = "word";
+			$salida = "file-word";
 			break;
 		case "pdf":
-			$salida = "pdf";
+			$salida = "file-pdf";
 			break;
 		case "xls":
-			$salida = "xls";
+			$salida = "file";
 			break;
 		case "zip":
-			$salida = "archive";
+			$salida = "file-archive";
 			break;
 	}
 	return $salida;

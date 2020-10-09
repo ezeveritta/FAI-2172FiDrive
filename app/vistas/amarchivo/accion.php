@@ -5,20 +5,22 @@
  * Fecha: 30/09/2020
  */
 
-$Titulo = "Alta-Modificación de Archivo"; 
-include_once("../estructura/cabecera.php");
-
-include_once("../controladores/AmarchivoControl.php");
+include_once("../../controladores/AmarchivoControl.php");
+include_once("../../../configuracion.php");
 
 $Control = new AmarchivoControl();
+$datos = data_submitted();
 
-?>
-
-<div class="contain">
-    Acción
-</div>
-
-<?php 
-
-include_once("../estructura/pie.php");
-?>
+// Verificamos que los campos sean validos
+if ($Control->validar($datos, $_FILES["archivo"]))
+{
+    if ($Control->cargar($datos, $_FILES["archivo"]))
+    {
+        header("Location: ../contenido/accion.php?carpeta=".$datos["ruta"]."?success=true");
+        die;
+    } else
+    {
+        header("Location: ../amarchivo/index.php?error=true");
+        die;
+    }
+}
