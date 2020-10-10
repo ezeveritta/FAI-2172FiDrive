@@ -168,14 +168,16 @@ $contenido = ContenidoControl::abrirDirectorio($ruta);
                                                     </a>
                                                 </div>
                                                 <div class="dropdown-item">
-                                                    <form action="../compartirarchivo" method="post">
-                                                        <input type="hidden" name="archivo" value="'.$ruta.'/'.$nombre.'">
+                                                    <form action="../compartirarchivo/index.php" method="post">
+                                                        <input type="hidden" name="archivo" value="'.$nombre.'">
+                                                        <input type="hidden" name="ruta" value="'.$ruta.'">
                                                         <button type="submit" class="btn bg-transparent">Compartir</button>
                                                     </form>
                                                 </div>
                                                 <div class="dropdown-item">
-                                                    <form action="../eliminararchivo" method="post">
-                                                        <input type="hidden" name="archivo" value="'.$ruta.'/'.$nombre.'">
+                                                    <form action="../eliminararchivo/index.php" method="post">
+                                                        <input type="hidden" name="archivo" value="'.$nombre.'">
+                                                        <input type="hidden" name="ruta" value="'.$ruta.'">
                                                         <button type="submit" class="btn bg-transparent text-danger"><span>Eliminar</span></button>
                                                     </form>
                                                 </div>
