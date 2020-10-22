@@ -15,7 +15,6 @@
     <!-- Bootstrap -->
     <link rel="stylesheet" href="../../../publico/css/bootstrap/bootstrap.min.css">
     <script src="../../../publico/js/bootstrap/bootstrapValidator.js"></script>
-    <!-- <script src="../../../publico/js/bootstrap/bootstrap.min.js"></script> -->
 
     <!-- Iconos -->
     <link rel="stylesheet" href="../../../publico/css/iconos/all.min.css">

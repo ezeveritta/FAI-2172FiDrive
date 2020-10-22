@@ -8,24 +8,24 @@
 $Titulo = "Contenido"; 
 include_once("../estructura/cabecera.php");
 
+// Datos de Get&Post
+$datos = data_submitted();
 
 // Carpeta Actual
-$ruta = '../../../archivos';
-$rutaActual = 'archivos';
-$direccion = opendir($ruta);
-$archivos = array();
-$carpetas = array();
+$ruta = (isset($datos['carpeta'])) ? $datos['carpeta'] : 'archivos';
+$direccion = opendir('../../../'.$ruta);
 
 // Obtener listado de carpetas y archivos
+$archivos = array();
+$carpetas = array();
 while (($temp = readdir($direccion)) !== false)
 {
-    if ($temp !== "." && $temp !== ".." && !is_dir($ruta.'/'.$temp))
+    if ($temp !== "." && $temp !== ".." && !is_dir('../../../'.$ruta.'/'.$temp))
         array_push($archivos, $temp);
-    if ($temp !== "." && $temp !== ".." && is_dir($ruta.'/'.$temp))
+    if ($temp !== "." && $temp !== ".." && is_dir('../../../'.$ruta.'/'.$temp))
         array_push($carpetas, $temp);
 }
 
-//print_r($archivos); // debug
 ?>
 
 <!-- Contenido -->
@@ -58,7 +58,7 @@ while (($temp = readdir($direccion)) !== false)
                                                 <label for="nombre">Nombre de carpeta</label>
                                                 <input type="text" class="form-control" id="nombre" name="nombre">
                                             </div>
-                                            <input type="hidden" name="ruta" value="archivos">
+                                            <input type="hidden" name="ruta" value="<?php echo $ruta ?>">
                                             <div class="col-sm-4">
                                                 <label for=""></label>
                                                 <button type="submit" class="btn btn-success btn-block mt-2 w-100">Crear</button>
@@ -83,7 +83,25 @@ while (($temp = readdir($direccion)) !== false)
                     <!-- Dirección -->
                     <div class="mr-3">
                         <i class="fa fa-chevron-right px-2"></i>
-                        <a href="#" class="text-muted"><?php echo $rutaActual ?></a>
+                        <?php
+                            // Divido las rutas en un array
+                            $exp = explode('/', $ruta);
+                            while(end($exp) == "")
+                            {
+                                // elimino los valores "" (sin contenido..)
+                                array_pop($exp);
+                            }
+                            // Por cada item, creo su elemento html a
+                            foreach ($exp as $i => $nombre)
+                            {
+                                echo '<a href="./index.php?carpeta=';
+                                for ($f=0; $f <= $i; $f++)
+                                {
+                                    echo $exp[$f] . '/';
+                                }
+                                echo '" class="text-muted">' . $nombre . '</a> / ';
+                            }
+                        ?>
                     </div>
                 </div>
 
@@ -96,30 +114,27 @@ while (($temp = readdir($direccion)) !== false)
                     // Recorremos el arreglo de carpetas e insertamos un HTML correspondiente
                     foreach($carpetas as $nombre)
                     {
-                        echo '<li class="list-group-item d-flex flex-column justify-content-around border m-2 custom-folder bg-light">'
-                            .   '<div class="h1"><i class="fa fa-folder"></i></div>'
-                            .   '<div class="row mt-2">'
-                            .       '<div class="col col-sm-10">'.$nombre.'</div>'
-                            .       '<div class="col col-sm-2 dropdown">'
-                            .           '<button type="button" class="float-right btn bg-transparent" id="item_'.$idItem.'_opciones" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'
-                            .           '<i class="fa fa-ellipsis-v"></i></button>'
-                            .           '<div class="dropdown-menu" aria-labelledby="item_'.$idItem.'_opciones">'
-                            .               '<div class="dropdown-item">'
-                            .                   '<form action="../compartirarchivo" method="post">'
-                            .                       '<input type="hidden" name="archivo" value="'.$ruta.'/'.$nombre.'">'
-                            .                       '<button type="submit" class="btn bg-transparent">Compartir</button>'
-                            .                   '</form>'
-                            .               '</div>'
-                            .               '<div class="dropdown-item">'
-                            .                   '<form action="../eliminararchivo" method="post">'
-                            .                       '<input type="hidden" name="archivo" value="'.$ruta.'/'.$nombre.'">'
-                            .                       '<button type="submit" class="btn bg-transparent text-danger"><span>Eliminar</span></button>'
-                            .                   '</form>'
-                            .               '</div>'
-                            .           '</div>'
-                            .      '</div>'
-                            .   "</div>"
-                            . "</li>";
+                        echo '<li class="list-group-item d-flex flex-column justify-content-around border m-2 custom-folder bg-light">
+                                <div class="h1"><i class="fa fa-folder"></i></div>
+                                <div class="row mt-2">
+                                    <div class="col col-sm-10">'.$nombre.'</div>
+                                    <div class="col col-sm-2 dropdown">
+                                        <button type="button" class="float-right btn bg-transparent" id="item_'.$idItem.'_opciones" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fa fa-ellipsis-v"></i></button>
+                                        <div class="dropdown-menu" aria-labelledby="item_'.$idItem.'_opciones">
+                                            <div class="dropdown-item">
+                                                <a href="./index.php?carpeta='.$ruta.'/'.$nombre.'" class="text-dark">Abrir</a>
+                                            </div>
+                                            <div class="dropdown-item">
+                                                <a href="../compartirarchivo/index.php?archivo='.$ruta.'/'.$nombre.'" class="text-dark">Compartir</a>
+                                            </div>
+                                            <div class="dropdown-item">
+                                                <a href="../eliminararchivo/index.php?archivo='.$ruta.'/'.$nombre.'" class="text-danger">Eliminar</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                              </li>';
                         $idItem++;
                     }
 
@@ -138,7 +153,7 @@ while (($temp = readdir($direccion)) !== false)
                         {
                             echo   '<div class="h1"><i class="fa fa-'.icono_archivo($tipo).'"></i></div>';
                         } else {
-                            echo '<div><img src="'.$ruta.'/'.$nombre.'" class="img-fluid w-75"></img></div>';
+                            echo '<div><img src="../../../'.$ruta.'/'.$nombre.'" class="img-fluid w-75"></img></div>';
                         }
 
                         echo   '<div class="row mt-2">
