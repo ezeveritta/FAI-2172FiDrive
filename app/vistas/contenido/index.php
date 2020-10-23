@@ -82,7 +82,6 @@ while (($temp = readdir($direccion)) !== false)
                 <div class="w-100 p-2 bg-light border-bottom">
                     <!-- Dirección -->
                     <div class="mr-3">
-                        <i class="fa fa-chevron-right px-2"></i>
                         <?php
                             // Divido las rutas en un array
                             $exp = explode('/', $ruta);
@@ -94,12 +93,12 @@ while (($temp = readdir($direccion)) !== false)
                             // Por cada item, creo su elemento html a
                             foreach ($exp as $i => $nombre)
                             {
-                                echo '<a href="./index.php?carpeta=';
+                                echo '<i class="fa fa-chevron-right px-2"></i> <a href="./index.php?carpeta=';
                                 for ($f=0; $f <= $i; $f++)
                                 {
                                     echo $exp[$f] . '/';
                                 }
-                                echo '" class="text-muted">' . $nombre . '</a> / ';
+                                echo '" class="text-muted">' . $nombre . '</a>';
                             }
                         ?>
                     </div>
