@@ -8,12 +8,18 @@
 $Titulo = "Alta-Mod Archivo"; 
 include_once("../estructura/cabecera.php");
 
-$hayArchivo = isset($_POST["archivo"]);
-$hayRuta = isset($_POST["ruta"]);
+$datos = data_submitted();
+$hayArchivo = isset($datos["archivo"]);
+$hayRuta = isset($datos["ruta"]);
+
 if ($hayArchivo)
-    $file = $_POST["archivo"];
-if ($hayRuta)
-    $ruta = $_POST["ruta"];
+    $file = $datos["archivo"];
+if ($hayRuta) {
+    $ruta = $datos["ruta"];
+} else
+{
+    $ruta = "archivos";
+}
 
 ?>
 
@@ -44,7 +50,7 @@ if ($hayRuta)
                         <div class="form-group col-sm-12">
                             <h6><label class="" for="archivo">Selecciona un archivo</label></h6>
                             <div class="custom-file">
-                                <input type="file" class="custom-file-inputl" id="archivo" required>
+                                <input type="file" class="custom-file-inputl" id="archivo" name="archivo" required>
                                 <label class="custom-file-label border" for="archivo" id="archivo_label">Selecciona un archivo...</label>
                                 <div class="invalid-feedback"></div>
                             </div>
@@ -113,19 +119,21 @@ if ($hayRuta)
                             <div class="invalid-feedback"></div>
                         </div>
                         
-        
-                        <input type="hidden" name="accion" id="accion" value="<?php echo $clave ?>">
+                        <?php $alta = ($datos["clave"] == "0") ? "Alta" : "Modificar" ?>
+                        <input type="hidden" name="accion" id="accion" value="<?php echo $alta ?>">
                         <input type="hidden" name="ruta" value="<?php echo $ruta?>">
                         <div class="col-sm-12">
                             <button type="submit" class="btn btn-primary btn-lg mt-3 mb-3 w-100">Enviar</button>
                         </div>
                     </div>
                 </form>
+
             </div>
 
         </div>
     </div>
 </div>
+
 
 <style>
 .custom-file-label::after{

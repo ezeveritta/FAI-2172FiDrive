@@ -7,6 +7,9 @@
 
 $Titulo = "Alta-Mod Archivo"; 
 include_once("../estructura/cabecera.php");
+
+$datos = data_submitted();
+
 ?>
 <!-- Contenido -->
 <div class="col-md-10">
@@ -14,13 +17,14 @@ include_once("../estructura/cabecera.php");
         <div class="col-sm-12 my-5">
             
             <div class="card card-block w-75 mx-auto" id="contenedor">
-                <form class="form w-100" action="accion.php" method="post" enctype="multipart/form-data">
+                <form name="eliminarArchivo" id="eliminarArchivo" class="form w-100" action="accion.php" method="post" data-toggle="validator">
                     <div class="row p-4">
                         <h4 class="text-center w-100 pb-3">Eliminar las opciones de compartir un Archivo</h4>
 
                         <div class="form-group mt-2 col-sm-12">
                             <h6><label class="">Nombre de Archivo</label></h6>
-                            <div class="border rounded form-control"><b>1234.png</b></div>
+                            <div class="border rounded form-control"><b><?php echo (isset($datos["archivo"])) ? $datos["archivo"] : "1234.png"?></b></div>
+                            <div class="invalid-feedback"></div>
                         </div>
 
                         <div class="form-group mt-2 col-sm-12">
@@ -30,11 +34,13 @@ include_once("../estructura/cabecera.php");
                                 <option value="visitante">Visitante</option>
                                 <option value="usted">usted</option>
                             </select>
+                            <div class="invalid-feedback"></div>
                         </div>
 
                         <div class="form-group mt-2 col-sm-12">
                             <h6><label class="" for="motivo">Motivo de eliminación</label></h6>
                             <textarea name="motivo" id="motivo" class="form-control" rows="6" style="min-height:55px"></textarea>
+                            <div class="invalid-feedback"></div>
                         </div>
 
                         <div class="col-sm-12 mt-5">
