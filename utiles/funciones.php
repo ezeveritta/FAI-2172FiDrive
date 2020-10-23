@@ -43,7 +43,7 @@ function tipo_archivo($ext)
 
 function icono_archivo($tipo)
 {
-	$salida = "nan";
+	$salida = "file";
 	switch ($tipo)
 	{
 		case "imagen":

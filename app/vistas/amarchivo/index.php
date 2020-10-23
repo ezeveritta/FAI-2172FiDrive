@@ -7,6 +7,8 @@
 
 $Titulo = "Alta-Mod Archivo"; 
 include_once("../estructura/cabecera.php");
+include_once("../../modelos/BaseDatos.php");
+include_once("../../modelos/Usuario.php");
 
 $datos = data_submitted();
 $hayArchivo = isset($datos["archivo"]);
@@ -68,9 +70,12 @@ if ($hayRuta) {
                         <div class="form-group col-sm-4">
                             <h6><label class="" for="usuario">Usuario</label></h6>
                             <select name="usuario" id="usuario" class="form-control">
-                                <option value="admin">Admin</option>
-                                <option value="visitante">Visitante</option>
-                                <option value="usted">usted</option>
+                                <?php
+                                foreach (Usuario::listar() as $user)
+                                {
+                                    echo '<option value="'.$user->get_id().'">'.$user->get_apellido().'</option>';
+                                }
+                                ?>
                             </select>
                             <div class="invalid-feedback"></div>
                         </div>

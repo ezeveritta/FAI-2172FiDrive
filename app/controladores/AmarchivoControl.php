@@ -8,6 +8,12 @@
 class AmarchivoControl
 {
     private $error;
+    private $archivoCargado;
+
+    public function __construct()
+    {
+        $this->ArchivoCargado = new ArchivoCargado();
+    }
 
     /**
      * Esta valida que la información sea la esperada
@@ -18,14 +24,14 @@ class AmarchivoControl
      */
     public function validar($datos, $archivo)
     {
-        $operacion = false;
+        $operacion = true;
 
         // Validamos
-        if ($datos["nombre"] != null)
-            $operacion = true;
+        $operacion = (isset($datos["nombre"]) && isset($datos["usuario"]) && isset($datos["descripcion"]) && isset($datos["icono"]))
+                    ? true : false;
         
         // Funcion incompleta, se continua para la proxima entrega si la catedra lo requiere
-
+        echo $operacion;
         return $operacion;
     }
 
@@ -41,10 +47,15 @@ class AmarchivoControl
         $operacion = false;
 
         // Cargamos info a la base de datos
-            //..
-        // Copiamos el archivo
-        if ($this->subir($archivo, $datos))
+        $ArchivoCargado = new ArchivoCargado();
+        $ArchivoCargado->cargar($datos["nombre"], $datos["descripcion"], $datos["icono"], $datos["nombre"], '0', '0', '', '', '', $datos["usuario"]);
+        
+        // Copiamos el archivo y cargamos info
+        if ($ArchivoCargado->insertar() && $this->subir($archivo, $datos))
+        {
             $operacion = true;
+            $this->set_archivoCargado($ArchivoCargado);
+        }
 
         return $operacion;
     }
@@ -75,4 +86,7 @@ class AmarchivoControl
 
 
     public function set_error ($data) { $this->error = $data; }
+    public function set_archivoCargado ($data) { $this->archivoCargado = $data; }
+    public function get_error () { return $this->error; }
+    public function get_archivoCargado () { return $this->archivoCargado; }
 }

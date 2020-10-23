@@ -5,6 +5,8 @@
  * Fecha: 30/09/2020
  */
 
+include_once("../../modelos/Basedatos.php");
+include_once("../../modelos/ArchivoCargado.php");
 include_once("../../controladores/AmarchivoControl.php");
 include_once("../../../configuracion.php");
 
@@ -17,7 +19,7 @@ if ($Control->validar($datos, $_FILES["archivo"]))
     // Si se carga, regresamos a la vista contenido
     if ($Control->cargar($datos, $_FILES["archivo"]))
     {
-        header("Location: ../contenido/accion.php?carpeta=".$datos["ruta"]."?success=true");
+        header("Location: ../compartirarchivo/index.php?id=".$Control->get_archivoCargado()->get_id());
         die;
     } 
     // Si hay un error, vuelvo al formulario

@@ -7,13 +7,22 @@
 
 $Titulo = "Compartir Archivo"; 
 include_once("../estructura/cabecera.php");
+include_once("../../modelos/BaseDatos.php");
+include_once("../../modelos/Usuario.php");
+include_once("../../modelos/ArchivoCargado.php");
 
 $datos = data_submitted();
-$hayArchivo = isset($datos["archivo"]);
-$file = ($hayArchivo) ? $datos["archivo"] : "1234.png";
+$ArchivoCargado = new ArchivoCargado();
+$ArchivoCargado->buscar($datos['id']);
 
-// Hash para el link
-
+$nombre = $ArchivoCargado->get_nombre();
+$limite = $ArchivoCargado->get_cantidadDescarga();
+$contraseña = $ArchivoCargado->get_protegidoClave();
+// cantidad días
+$vencimiento = $ArchivoCargado->get_fechaFinCompartir();
+$date = new DateTime($vencimiento);
+$now = new DateTime();
+$vencimiento = $date->diff($now)->format("%d");
 ?>
 <!-- Contenido -->
 <div class="col-md-10">
@@ -27,26 +36,29 @@ $file = ($hayArchivo) ? $datos["archivo"] : "1234.png";
 
                         <div class="form-group mt-2 col-sm-6">
                             <h6><label class="">Nombre de Archivo</label></h6>
-                            <div class="border rounded form-control"><b><?php echo $file ?></b></div>
+                            <div class="border rounded form-control"><b><?php echo $nombre ?></b></div>
                         </div>
 
                         <div class="form-group mt-2 col-sm-6">
                             <h6><label class="" for="usuario">Usuario</label></h6>
                             <select name="usuario" id="usuario" class="form-control">
-                                <option value="admin">Admin</option>
-                                <option value="visitante">Visitante</option>
-                                <option value="usted">usted</option>
+                                <?php
+                                foreach (Usuario::listar() as $user)
+                                {
+                                    echo '<option value="'.$user->get_id().'">'.$user->get_apellido().'</option>';
+                                }
+                                ?>
                             </select>
                         </div>
 
                         <div class="form-group mt-2 col-sm-6">
                             <h6><label class="" for="vencimiento">Vencimiento</label></h6>
-                            <input type="number" name="vencimiento" class="form-control" id="vencimiento" placeholder="Cantidad de días disponibles.">
+                            <input type="number" name="vencimiento" class="form-control" id="vencimiento" placeholder="Cantidad de días disponibles." value="<?php echo $vencimiento; ?>">
                         </div>
 
                         <div class="form-group mt-2 col-sm-6">
                             <h6><label class="" for="limite">Limite de descargas</label></h6>
-                            <input type="number" name="limite" class="form-control" id="limite" placeholder="Cantidad de descargas disponibles.">
+                            <input type="number" name="limite" class="form-control" id="limite" placeholder="Cantidad de descargas disponibles." value="<?php echo $limite ?>">
                         </div>
 
 
@@ -105,7 +117,7 @@ $(document).ready(function(){
 
     // Generar un hash
     $("#btnHash").on('click', function(){
-        var nombreDeArchivo   = "<?php echo $file; ?>",
+        var nombreDeArchivo   = "<?php echo $nombre; ?>",
             cantidadDescargas = $("#limite").val(),
             cantidadDias      = $("#vencimiento").val(),
             valor = "9007199254740991";

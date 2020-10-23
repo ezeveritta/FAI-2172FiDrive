@@ -177,6 +177,7 @@ class ArchivoCargado
                             .",".$this->get_cantidadUsada().",'".$this->get_fechaInicioCompartir()."','".$this->get_fechaFinCompartir()
                             ."','".$this->get_protegidoClave()."',".$this->get_usuario()->get_id().")";
                             
+echo $query;    
         // Iniciamos conexión
         if($bd->Iniciar())
         {
