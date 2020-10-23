@@ -131,8 +131,8 @@ class EstadoTipos
 		$bd     = new BaseDatos();
 		$output = false;
 		$query  = "INSERT INTO estadotipos(etdescripcion, etactivo)
-				   VALUES ('".$this->get_descripcion()."',".$this->get_activo().")";
-        echo $query;
+                   VALUES ('".$this->get_descripcion()."',".$this->get_activo().")";
+                   
         // Iniciamos conexión
         if($bd->Iniciar())
         {
