@@ -95,30 +95,45 @@ class AmarchivoControl
 
     /**
      * Esta función retorna la información obtenida de las tablas "archivocargado" y "archivocargadoestado" segun la id
-     * @param string $id idarchivocargadoestado
+     * @param string $datos [ruta o id]
      * 
      * @return array 
      */
-    public function get_info($id)
+    public function get_info($datos)
     {
-        $arreglo = null;
+        $arreglo = array();
 
         // Modelos a usar
         $ACE = new ArchivoCargadoEstado();
         $AC = new ArchivoCargado();
 
-        if ($ACE->buscar($id))
+        // Si hay un id
+        if (isset($datos['id']))
         {
-            if ($AC->buscar($ACE->get_archivoCargado()->get_id()))
+            // Busco la información
+            if ($ACE->buscar($datos['id']))
             {
-                $arreglo['nombre'] = $AC->get_nombre();
-                $arreglo['usuario'] = $ACE->get_usuario()->get_id();
-                $arreglo['contraseña'] = $AC->get_protegidoClave();
-                $arreglo['limite'] = $AC->get_cantidadDescarga();
-                $arreglo['enlace'] = $AC->get_linkAcceso();
-                $arreglo['fechaFin'] = $AC->get_fechaFinCompartir();
+                if ($AC->buscar($ACE->get_archivoCargado()->get_id()))
+                {
+                    $arreglo['nombre'] = $AC->get_nombre();
+                    $arreglo['usuario'] = $AC->get_usuario()->get_id();
+                    $arreglo['descripcion'] = $AC->get_descripcion();
+                    $arreglo['icono'] = $AC->get_icono();
+                    $arreglo['clave'] = 1; // Acción: MODIFICAR
+                    $arreglo['ruta'] = $AC->get_linkAcceso();
+                }
             }
         }
+        else
+        {
+            $arreglo['nombre'] = null;
+            $arreglo['usuario'] = null;
+            $arreglo['descripcion'] = null;
+            $arreglo['icono'] = null;
+            $arreglo['clave'] = 0; // Acción: ALTA
+            $arreglo['ruta'] = (isset($datos['ruta'])) ? $datos['ruta'] : 'archivos';
+        }
+        
         return $arreglo;
     }
 

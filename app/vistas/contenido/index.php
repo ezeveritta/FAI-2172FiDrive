@@ -177,9 +177,8 @@ $contenido = ContenidoControl::abrirDirectorio($ruta);
                                                 </a>
                                             </div>
                                             <div class="dropdown-item">
-                                                <form action="../compartirarchivo/index.php" method="post">
-                                                    <input type="hidden" name="archivo" value="'.$nombre.'">
-                                                    <input type="hidden" name="ruta" value="'.$ruta.'">
+                                                <form action="../compartirarchivo/index.php" method="get">
+                                                    <input type="hidden" name="id" value="'.$nombre.'">
                                                     <button type="submit" class="btn bg-transparent">Compartir</button>
                                                 </form>
                                             </div>

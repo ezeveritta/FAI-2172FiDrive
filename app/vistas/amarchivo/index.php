@@ -1,38 +1,35 @@
 <?php 
+
+$Titulo = "Alta-Mod Archivo"; 
+include_once("../estructura/cabecera.php");
+include_once("../../modelos/BaseDatos.php");
+include_once("../../modelos/ArchivoCargado.php");
+include_once("../../modelos/ArchivoCargadoEstado.php");
+include_once("../../controladores/AmarchivoControl.php");
+
 /**
  * Alumno: Ezequiel Vera
  * Legajo: FAI-2172
  * Fecha: 23/09/2020
  */
 
-$Titulo = "Alta-Mod Archivo"; 
-include_once("../estructura/cabecera.php");
-include_once("../../modelos/BaseDatos.php");
-include_once("../../modelos/Usuario.php");
-
+// Obtengo datos
 $datos = data_submitted();
-$hayArchivo = isset($datos["archivo"]);
-$hayRuta = isset($datos["ruta"]);
 
-if ($hayArchivo)
-    $file = $datos["archivo"];
-if ($hayRuta) {
-    $ruta = $datos["ruta"];
-} else
-{
-    $ruta = "archivos";
-}
+// Creo el controlador
+$control = new AmarchivoControl();
 
-?>
+// obtengo la información para utilizar en la página
+$info = $control->get_info($datos);
 
-<?php
-    // Si hay un archivo cargado..
-    if( isset($_FILES["archivo"]))
-    {
-        $clave = 1; // Modificación
-        $ext = pathinfo($_FILES["archivo"], PATHINFO_EXTENSION);
-        echo $ext;
-    }
+// seteo esa info en variables para mayor comodidad
+$ruta = $info['ruta'];
+$nombre = $info['nombre'];
+$usuario = $info['usuario'];
+$descripcion = $info['descripcion'];
+$icono = $info['icono'];
+$clave = $info['clave'];
+
 ?>
 
 <!-- Contenido -->
@@ -46,7 +43,7 @@ if ($hayRuta) {
                         <h5 class="mt-3 text-center w-100">Alta - Modificación de Archivo</h5>
 
                         <?php
-                        if(!$hayArchivo)
+                        if($nombre == null)
                         {
                         ?>
                         <div class="form-group col-sm-12">
@@ -63,7 +60,7 @@ if ($hayRuta) {
 
                         <div class="form-group col-sm-8">
                             <h6><label class="" for="nombre">Nombre de Archivo</label></h6>
-                            <input type="text" name="nombre" class="form-control" id="nombre" value="<?php echo ($hayArchivo) ? $file : "1234.png" ?>">
+                            <input type="text" name="nombre" class="form-control" id="nombre" value="<?php echo ($clave != 0) ? $nombre : "1234.png" ?>">
                             <div class="invalid-feedback"></div>
                         </div>
 
@@ -73,7 +70,8 @@ if ($hayRuta) {
                                 <?php
                                 foreach (Usuario::listar() as $user)
                                 {
-                                    echo '<option value="'.$user->get_id().'">'.$user->get_apellido().'</option>';
+                                    $selected = ($user->get_id() == $usuario) ? 'selected="selected"' : '';
+                                    echo '<option value="'.$user->get_id().'" '.$selected.'>'.$user->get_apellido().'</option>';
                                 }
                                 ?>
                             </select>
@@ -83,7 +81,8 @@ if ($hayRuta) {
                         <div class="form-group col-sm-12">
                             <h6><label class="" for="descripcion">Descripción de Archivo</label></h6>
                             <div class="border p-2">
-                                <textarea name="descripcion" id="descripcion" class=""><p><b>Esta es una descripción genérica</b></p><p>si lo necesita la puede cambiar.</p></textarea>
+                                <?php $text = ($descripcion != null) ? $descripcion : '<p><b>Esta es una descripción genérica</b></p><p>si lo necesita la puede cambiar.</p>'; ?>
+                                <textarea name="descripcion" id="descripcion" class=""><?php echo $text; ?></textarea>
                             </div>
                             <div class="invalid-feedback"></div>
                         </div>
@@ -92,31 +91,31 @@ if ($hayRuta) {
                             <h6 class="w-100"><b>Seleccione icono para usar</b></h6>
                             
                             <label for="icono_imagen" class="border rounded p-2 mr-2">
-                                <input type="radio" name="icono" value="imagen" id="icono_imagen">
+                                <input type="radio" name="icono" value="imagen" id="icono_imagen" <?php if($icono == 'Imagen') echo 'checked'; ?>>
                                 <i class="fas fa-image"></i>
                                 Imagen
                             </label>
                             
                             <label for="icono_zip" class="border rounded p-2 mr-2">
-                                <input type="radio" name="icono" value="zip" id="icono_zip">
+                                <input type="radio" name="icono" value="zip" id="icono_zip" <?php if($icono == 'zip') echo 'checked'; ?>>
                                 <i class="fas fa-file-archive"></i>
                                 Zip
                             </label>
 
                             <label for="icono_doc" class="border rounded p-2 mr-2">
-                                <input type="radio" name="icono" value="doc" id="icono_doc">
+                                <input type="radio" name="icono" value="doc" id="icono_doc" <?php if($icono == 'doc') echo 'checked'; ?>>
                                 <i class="fas fa-file-word"></i>
                                 Doc
                             </label>
 
                             <label for="icono_pdf" class="border rounded p-2 mr-2">
-                                <input type="radio" name="icono" value="pdf" id="icono_pdf">
+                                <input type="radio" name="icono" value="pdf" id="icono_pdf" <?php if($icono == 'pdf') echo 'checked'; ?>>
                                 <i class="fas fa-file-pdf"></i>
                                 PDF
                             </label>
 
                             <label for="icono_xls" class="border rounded p-2 mr-2">
-                                <input type="radio" name="icono" value="xls" id="icono_xls">
+                                <input type="radio" name="icono" value="xls" id="icono_xls" <?php if($icono == 'xls') echo 'checked'; ?>>
                                 <i class="fas fa-file"></i>
                                 XLS
                             </label>
@@ -124,8 +123,8 @@ if ($hayRuta) {
                             <div class="invalid-feedback"></div>
                         </div>
                         
-                        <?php $alta = ($datos["clave"] == "0") ? "Alta" : "Modificar" ?>
-                        <input type="hidden" name="accion" id="accion" value="<?php echo $alta ?>">
+                        <?php $accion = ($clave == "0") ? "Alta" : "Modificar" ?>
+                        <input type="hidden" name="accion" id="accion" value="<?php echo $accion ?>">
                         <input type="hidden" name="ruta" value="<?php echo $ruta?>">
                         <div class="col-sm-12">
                             <button type="submit" class="btn btn-primary btn-lg mt-3 mb-3 w-100">Enviar</button>

@@ -13,20 +13,21 @@ $Control = new ContenidoControl();
 $datos = data_submitted();
 
 // Verifico que acción se quiere realizaar
+
 /////////// ABRIR DIRECTORIO
 if (isset($datos["carpeta"]))
 {
     // Cargo la página "contenido" y seteo la ruta a abrir
-    $ruta = $datos["carpeta"];
-    include_once("index.php");
+    header("Location: index.php?carpeta=".$datos["carpeta"]);
+    die();
 } 
 /////////// NUEVA CARPETA
 else
 {
     // Creo la carpeta
-    $op = $Control->crearCarpeta($datos);
-
-    // Redirecciono a contenido
-    header("Location: accion.php?nuevaRuta=".$datos["ruta"]);
-    die();
+    if( $Control->crearCarpeta($datos))
+    {
+        header("Location: index.php?carpeta=".$datos["ruta"]);
+        die();
+    }
 }
