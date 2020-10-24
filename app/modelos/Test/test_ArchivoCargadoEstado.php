@@ -20,13 +20,13 @@ $ACE->cargar('pruebadescripción', '1999-12-21', '2014-11-12', '1', '2', '1');
 echo "<br><br>" . $ACE->insertar();*/
 
 /////////////////////////////////////////////////////
-/* MÉTODO: MODIFICAR
+/* MÉTODO: MODIFICAR */
 
 $ACE = new ArchivoCargadoEstado();
 $ACE->buscar('1');
 $ACE->set_descripcion('testmodificar');
 
-echo "<br><br>" . $ACE->modificar();*/
+echo "<br><br>" . $ACE->modificar();
 
 /////////////////////////////////////////////////////
 /* MÉTODO: ELIMINAR 

@@ -192,8 +192,8 @@ class ArchivoCargadoEstado
                ."',idestadotipos=". $this->get_estadoTipos()->get_id()
                .",idusuario=". $this->get_usuario()->get_id()
                .",idarchivocargado=". $this->get_archivoCargado()->get_id()
-               ." WHERE idarchivocargado=".$this->get_id();
-
+               ." WHERE idarchivocargadoestado=".$this->get_id();
+               
         // Iniciamos conexión
         if($bd->Iniciar())
         {
@@ -268,7 +268,7 @@ class ArchivoCargadoEstado
     {
         return "<b>Objeto ArchivoCargadoEstado: </b>"
              . "<br>id: " . $this->get_id()
-             . "<br>descipción: " . $this->get_descripcion()
+             . "<br>descripción: " . $this->get_descripcion()
              . "<br>fechaIngreso: " . $this->get_fechaIngreso()
              . "<br>fechaFin: " . $this->get_fechaFin()
              . "<br>EstadoTipos: " . $this->get_estadoTipos()

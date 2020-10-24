@@ -1,25 +1,28 @@
 <?php 
+include_once("../../../configuracion.php");
+include_once("../../controladores/AmarchivoControl.php");
+include_once('../../modelos/BaseDatos.php');
+include_once('../../modelos/ArchivoCargado.php');
+include_once('../../modelos/ArchivoCargadoEstado.php');
+
 /**
  * Alumno: Ezequiel Vera
  * Legajo: FAI-2172
  * Fecha: 30/09/2020
- */
+*/
 
-include_once("../../modelos/Basedatos.php");
-include_once("../../modelos/ArchivoCargado.php");
-include_once("../../controladores/AmarchivoControl.php");
-include_once("../../../configuracion.php");
-
-$Control = new AmarchivoControl();
+// Datos del formulario
 $datos = data_submitted();
 
+$control = new AmarchivoControl();
+
 // Verificamos que los campos sean validos
-if ($Control->validar($datos, $_FILES["archivo"]))
+if ($control->validar($datos, $_FILES["archivo"]))
 {
     // Si se carga, regresamos a la vista contenido
-    if ($Control->cargar($datos, $_FILES["archivo"]))
+    if ($control->cargar($datos, $_FILES["archivo"]))
     {
-        header("Location: ../compartirarchivo/index.php?id=".$Control->get_archivoCargado()->get_id());
+        header("Location: ../compartirarchivo/index.php?id=".$control->get_archivoCargadoEstado()->get_id());
         die;
     } 
     // Si hay un error, vuelvo al formulario

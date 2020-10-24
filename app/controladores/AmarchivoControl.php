@@ -9,6 +9,7 @@ class AmarchivoControl
 {
     private $error;
     private $archivoCargado;
+    private $archivoCargadoEstado;
 
     public function __construct()
     {
@@ -48,13 +49,21 @@ class AmarchivoControl
 
         // Cargamos info a la base de datos
         $ArchivoCargado = new ArchivoCargado();
-        $ArchivoCargado->cargar($datos["nombre"], $datos["descripcion"], $datos["icono"], $datos["nombre"], '0', '0', '', '', '', $datos["usuario"]);
+        
+        $ArchivoCargado->cargar($datos["nombre"], $datos["descripcion"], $datos["icono"], $datos["ruta"], '0', '0', '', '', '', $datos["usuario"]);
         
         // Copiamos el archivo y cargamos info
         if ($ArchivoCargado->insertar() && $this->subir($archivo, $datos))
         {
-            $operacion = true;
-            $this->set_archivoCargado($ArchivoCargado);
+            // Ahora insertamos en la tabla archivocargadoestado
+            $ACE = new ArchivoCargadoEstado();
+            $ACE->cargar('', '', '', '1', '1', $ArchivoCargado->get_id());
+            if ($ACE->insertar())
+            {
+                $operacion = true;
+                $this->set_archivoCargado($ArchivoCargado);
+                $this->set_archivoCargadoEstado($ACE);
+            }
         }
 
         return $operacion;
@@ -84,9 +93,40 @@ class AmarchivoControl
         return $operacion;
     }
 
+    /**
+     * Esta función retorna la información obtenida de las tablas "archivocargado" y "archivocargadoestado" segun la id
+     * @param string $id idarchivocargadoestado
+     * 
+     * @return array 
+     */
+    public function get_info($id)
+    {
+        $arreglo = null;
+
+        // Modelos a usar
+        $ACE = new ArchivoCargadoEstado();
+        $AC = new ArchivoCargado();
+
+        if ($ACE->buscar($id))
+        {
+            if ($AC->buscar($ACE->get_archivoCargado()->get_id()))
+            {
+                $arreglo['nombre'] = $AC->get_nombre();
+                $arreglo['usuario'] = $ACE->get_usuario()->get_id();
+                $arreglo['contraseña'] = $AC->get_protegidoClave();
+                $arreglo['limite'] = $AC->get_cantidadDescarga();
+                $arreglo['enlace'] = $AC->get_linkAcceso();
+                $arreglo['fechaFin'] = $AC->get_fechaFinCompartir();
+            }
+        }
+        return $arreglo;
+    }
+
 
     public function set_error ($data) { $this->error = $data; }
     public function set_archivoCargado ($data) { $this->archivoCargado = $data; }
+    public function set_archivoCargadoEstado ($data) { $this->archivoCargadoEstado = $data; }
     public function get_error () { return $this->error; }
     public function get_archivoCargado () { return $this->archivoCargado; }
+    public function get_archivoCargadoEstado () { return $this->archivoCargadoEstado; }
 }
