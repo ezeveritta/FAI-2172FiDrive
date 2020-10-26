@@ -23,7 +23,7 @@ class AmarchivoControl
      * 
      * @return boolean
      */
-    public function validar($datos, $archivo)
+    public function validar($datos)
     {
         $operacion = true;
 
@@ -32,7 +32,7 @@ class AmarchivoControl
                     ? true : false;
         
         // Funcion incompleta, se continua para la proxima entrega si la catedra lo requiere
-        echo $operacion;
+        
         return $operacion;
     }
 
@@ -50,19 +50,53 @@ class AmarchivoControl
         // Cargamos info a la base de datos
         $ArchivoCargado = new ArchivoCargado();
         
-        $ArchivoCargado->cargar($datos["nombre"], $datos["descripcion"], $datos["icono"], $datos["ruta"], '0', '0', '', '', '', $datos["usuario"]);
+        $ArchivoCargado->cargar($datos["nombre"], $datos["descripcion"], $datos["icono"], $datos["ruta"].'/'.$datos["nombre"], '0', '0', '', '', '', $datos["usuario"]);
         
         // Copiamos el archivo y cargamos info
         if ($ArchivoCargado->insertar() && $this->subir($archivo, $datos))
         {
             // Ahora insertamos en la tabla archivocargadoestado
             $ACE = new ArchivoCargadoEstado();
-            $ACE->cargar('', '', '', '1', '1', $ArchivoCargado->get_id());
+            $ACE->cargar('Archivo recien cargado, aún no compartido.', '', '', '1', '1', $ArchivoCargado->get_id());
             if ($ACE->insertar())
             {
                 $operacion = true;
                 $this->set_archivoCargado($ArchivoCargado);
                 $this->set_archivoCargadoEstado($ACE);
+            }
+        }
+
+        return $operacion;
+    }
+
+    /**
+     * Esta función modifica los datos de la BD
+     * @param array $datos Tiene todos los datos a subir a la bd
+     * 
+     * @return boolean
+     */
+    public function modificar($datos)
+    {
+        $operacion = false;
+
+        // Cargamos info a la base de datos
+        $ArchivoCargado = new ArchivoCargado();
+        
+        // Buscamos la tupla en la BD
+        if ($ArchivoCargado->buscar($datos['id']))
+        {
+            $linkNuevo = dirname($datos["ruta"]).'/'.$datos["nombre"];
+            $ArchivoCargado->set_descripcion($datos['descripcion']);
+            $ArchivoCargado->set_usuario($datos['usuario']);
+            $ArchivoCargado->set_icono($datos['icono']);
+            $ArchivoCargado->set_nombre($datos['nombre']);
+            rename('../../../'.$ArchivoCargado->get_linkAcceso(), '../../../'.$linkNuevo);
+            $ArchivoCargado->set_linkAcceso($linkNuevo);
+
+            if ($ArchivoCargado->modificar())
+            {
+                $this->set_archivoCargado($ArchivoCargado);
+                $operacion = true;
             }
         }
 

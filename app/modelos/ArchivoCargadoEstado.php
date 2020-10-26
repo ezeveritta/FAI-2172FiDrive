@@ -56,10 +56,10 @@ class ArchivoCargadoEstado
      * 
      * @return boolean
      */
-    public function buscar($id)
+    public function buscar($id, $where = 'idarchivocargadoestado')
     {
         $bd = new BaseDatos();
-		$query = "SELECT * from archivocargadoestado  where idarchivocargadoestado =" . $id;
+		$query = "SELECT * from archivocargadoestado  where ".$where." =" . $id;
         $output = false;
         
         // Inicio conexión con bd
@@ -71,7 +71,7 @@ class ArchivoCargadoEstado
                 // Recupero la información
                 if($row2 = $bd->Registro())
                 {
-				    $this->set_id($id);
+				    $this->set_id($row2['idarchivocargadoestado']);
 					$this->set_descripcion($row2['acedescripcion']);
                     $this->set_fechaIngreso($row2['acefechaingreso']);
                     $this->set_fechaFin($row2['acefechafin']);
@@ -193,7 +193,6 @@ class ArchivoCargadoEstado
                .",idusuario=". $this->get_usuario()->get_id()
                .",idarchivocargado=". $this->get_archivoCargado()->get_id()
                ." WHERE idarchivocargadoestado=".$this->get_id();
-               
         // Iniciamos conexión
         if($bd->Iniciar())
         {

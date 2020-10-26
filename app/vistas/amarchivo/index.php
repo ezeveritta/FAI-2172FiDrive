@@ -126,6 +126,7 @@ $clave = $info['clave'];
                         <?php $accion = ($clave == "0") ? "Alta" : "Modificar" ?>
                         <input type="hidden" name="accion" id="accion" value="<?php echo $accion ?>">
                         <input type="hidden" name="ruta" value="<?php echo $ruta?>">
+                        <input type="hidden" name="id" value="<?php echo $datos['id']?>">
                         <div class="col-sm-12">
                             <button type="submit" class="btn btn-primary btn-lg mt-3 mb-3 w-100">Enviar</button>
                         </div>

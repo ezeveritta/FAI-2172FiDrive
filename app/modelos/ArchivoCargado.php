@@ -65,12 +65,19 @@ class ArchivoCargado
      * 
      * @return boolean
      */
-    public function buscar($id)
+    public function buscar($valor, $where = 'idarchivocargado')
     {
         $bd = new BaseDatos();
-		$query = "SELECT * from archivocargado  where idarchivocargado =" . $id;
+        if ($where != 'idarchivocargado')
+        {
+            $query = "SELECT * from archivocargado  where ".$where." ='" . $valor."'";
+        }
+        else
+        {
+		    $query = "SELECT * from archivocargado  where ".$where." =" . $valor;
+        }
         $output = false;
-        
+        echo "<br><b>query</b>: ". $query;
         // Inicio conexión con bd
         if($bd->Iniciar())
         {
@@ -80,7 +87,7 @@ class ArchivoCargado
                 // Recupero la información
                 if($row2 = $bd->Registro())
                 {
-				    $this->set_id($id);
+				    $this->set_id($row2['idarchivocargado']);
 					$this->set_nombre($row2['acnombre']);
 					$this->set_descripcion($row2['acdescripcion']);
 					$this->set_icono($row2['acicono']);
@@ -210,11 +217,10 @@ echo $query;
                ."',acicono='".$this->get_icono()."',aclinkacceso='". $this->get_linkAcceso()
                ."',accantidaddescarga=". $this->get_cantidadDescarga().",accantidadusada=". $this->get_cantidadUsada()
                .",acfechainiciocompartir='". $this->get_fechaInicioCompartir()
-               ."',acefechafincompartir='". $this->get_fechaInicioCompartir()
-               ."',acprotegidoclave=". $this->get_protegidoClave()
-               .",idusuario=". $this->get_usuario()->get_id()
+               ."',acefechafincompartir='". $this->get_fechaFinCompartir()
+               ."',acprotegidoclave='". $this->get_protegidoClave()
+               ."',idusuario=". $this->get_usuario()->get_id()
                ." WHERE idarchivocargado=".$this->get_id();
-
 
         // Iniciamos conexión
         if($bd->Iniciar())

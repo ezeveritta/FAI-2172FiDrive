@@ -39,7 +39,7 @@ class CompartirArchivoControl
         $usuario = $datos['usuario'];
         $vencimiento = $datos['vencimiento'];
         $limite = $datos['limite'];
-        $contraseña = $datos['contraseña'];
+        $contraseña = (isset($datos['contraseña']) ? $datos['contraseña'] : '');
         $enlace = $datos['enlace'];
         $dateTime = new DateTime();
 
@@ -56,7 +56,8 @@ class CompartirArchivoControl
         // acefechafincompartir, acprotegidoclave
         $AC->set_cantidadDescarga($limite);
         $AC->set_fechaInicioCompartir($dateTime->format("Y-m-d H:i:s"));
-        $AC->set_fechaFinCompartir($dateTime->add(new DateInterval('P'.$vencimiento.'D')));
+        $temp = $dateTime->add(new DateInterval('P'.$vencimiento.'D'));
+        $AC->set_fechaFinCompartir($dateTime->format("Y-m-d H:i:s"));
         $AC->set_protegidoClave($contraseña);
 
         // Intentamos modificar db archivocargado
@@ -72,7 +73,7 @@ class CompartirArchivoControl
             if ($ACE->modificar())
             {
                 $operacion = true;
-                $this->set_ruta($AC->get_linkAcceso());
+                $this->set_ruta(dirname($AC->get_linkAcceso()));
             } else { echo $ACE->get_error(); }
 
         } else { echo $AC->get_error(); }
@@ -86,7 +87,7 @@ class CompartirArchivoControl
      * 
      * @return array 
      */
-    public function get_info($id)
+    public function get_info($datos)
     {
         $arreglo = null;
 
@@ -94,18 +95,41 @@ class CompartirArchivoControl
         $ACE = new ArchivoCargadoEstado();
         $AC = new ArchivoCargado();
 
-        if ($ACE->buscar($id))
+        // SI busco por ID
+        if(isset($datos['id']))
         {
-            if ($AC->buscar($ACE->get_archivoCargado()->get_id()))
+            if ($ACE->buscar($id))
             {
-                $arreglo['nombre'] = $AC->get_nombre();
-                $arreglo['usuario'] = $ACE->get_usuario()->get_id();
-                $arreglo['contraseña'] = $AC->get_protegidoClave();
-                $arreglo['limite'] = $AC->get_cantidadDescarga();
-                $arreglo['enlace'] = $AC->get_linkAcceso();
-                $arreglo['fechaFin'] = $AC->get_fechaFinCompartir();
+                if ($AC->buscar($ACE->get_archivoCargado()->get_id()))
+                {
+                    $arreglo['id'] = $AC->get_id();
+                    $arreglo['nombre'] = $AC->get_nombre();
+                    $arreglo['usuario'] = $ACE->get_usuario()->get_id();
+                    $arreglo['contraseña'] = $AC->get_protegidoClave();
+                    $arreglo['limite'] = $AC->get_cantidadDescarga();
+                    $arreglo['enlace'] = $AC->get_linkAcceso();
+                    $arreglo['fechaFin'] = $AC->get_fechaFinCompartir();
+                }
             }
         }
+        // Si busco por ruta
+        else
+        {
+            if ($AC->buscar($datos['archivo'], 'aclinkacceso'))
+            {
+                if ($ACE->buscar($AC->get_id()))
+                {
+                    $arreglo['id'] = $AC->get_id();
+                    $arreglo['nombre'] = $AC->get_nombre();
+                    $arreglo['usuario'] = $ACE->get_usuario()->get_id();
+                    $arreglo['contraseña'] = $AC->get_protegidoClave();
+                    $arreglo['limite'] = $AC->get_cantidadDescarga();
+                    $arreglo['enlace'] = $AC->get_linkAcceso();
+                    $arreglo['fechaFin'] = $AC->get_fechaFinCompartir();
+                }
+            }
+        }
+        
         return $arreglo;
     }
 

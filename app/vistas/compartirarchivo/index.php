@@ -17,7 +17,7 @@ include_once("../../modelos/ArchivoCargadoEstado.php");
 $datos = data_submitted();
 
 // SI NO HAY UN CAMPO "id" REGRESO A LA PÁGINA "contenido"
-if (!isset($datos['id']))
+if (!isset($datos['id']) && !isset($datos['archivo']))
 {
     header('Location: ../contenido');
     die;
@@ -29,11 +29,12 @@ else
     $control = new CompartirArchivoControl();
 
     // Obtengo la información que se usará en la página
-    $info = $control->get_info($datos['id']);
+    $info = $control->get_info($datos);
 
     // Defino las variables a utilizar en la página
     if ($info != null)
     {
+    $id = $info['id'];
     $nombre = $info['nombre'];
     $usuario = $info['usuario'];
     $limite = $info['limite'];
@@ -41,7 +42,7 @@ else
     $enlace = $info['enlace'];
     // cantidad días
     $date = new DateTime($info['fechaFin']);
-    $vencimiento = $date->diff(new DateTime())->format("%d");
+    $vencimiento = $date->diff(new DateTime('now'))->format("%d");
     ?>
 
     <!-- Contenido -->
@@ -73,7 +74,7 @@ else
                             </div>
 
                             <div class="form-group mt-2 col-sm-6">
-                                <h6><label class="" for="vencimiento">Vencimiento</label></h6>
+                                <h6><label class="" for="vencimiento">Cantidad de días a compartir</label></h6>
                                 <input type="number" name="vencimiento" class="form-control" id="vencimiento" placeholder="Cantidad de días disponibles." value="<?php echo $vencimiento; ?>">
                             </div>
 
@@ -101,7 +102,7 @@ else
                                 <h6><label class="">Enlace para compartir</label></h6>
                                 <div class="border rounded form-control">
                                     <?php if ($enlace != '') { ?>
-                                    <a href="https://localhost/<?php echo $enlace; ?>" target="_blank" id="enlace" class="col col-11 block"><?php echo 'https://localhost/'.$enlace; ?></a>
+                                    <a href="https://localhost/FAI2172-FiDrive/<?php echo $enlace; ?>" target="_blank" id="enlace" class="col col-11 block"><?php echo 'https://localhost/'.$enlace; ?></a>
                                     <?php } else { ?>
                                     <a href="#" target="_blank" id="enlace" class="col col-11 block"></a>
                                     <?php } ?>
@@ -153,7 +154,7 @@ else
                         ? CryptoJS.MD5(nombreDeArchivo + cantidadDescargas + cantidadDias).toString()
                         : CryptoJS.MD5(nombreDeArchivo + valor).toString();
             
-            $("#enlace").html('<a href="https://localhost/'+hashLink+'" target="_blanck">https://localhost/'+hashLink+'</a>');
+            $("#enlace").html('<a href="https://localhost/FAI2172-FiDrive/'+hashLink+'" target="_blanck">https://localhost/'+hashLink+'</a>');
             $("#enlace_input").val(hashLink);
         });
     });
