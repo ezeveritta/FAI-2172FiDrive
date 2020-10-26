@@ -108,7 +108,7 @@ $contenido = ContenidoControl::abrirDirectorio($ruta);
                     </div>
                 </div>
 
-                <ul class="list-group list-group-horizontal align-items-stretch flex-wrap text-center ft-explorer-grid-container border-0">
+                <ul class="list-group list-group-horizontal align-items-stretch flex-wrap text-center ft-explorer-grid-container border-0" id="contenido">
                                         
                     <?php
                     // Verifico si hay contenido en la carpeta
@@ -122,7 +122,7 @@ $contenido = ContenidoControl::abrirDirectorio($ruta);
                     // Recorremos el arreglo de carpetas e insertamos un HTML correspondiente
                     foreach($carpetas as $nombre)
                     {
-                        echo '<li class="list-group-item d-flex flex-column justify-content-around border m-2 custom-folder bg-light">
+                        echo '<li class="list-group-item d-flex flex-column justify-content-around border m-2 custom-folder bg-light folder">
                                 <div class="h1"><i class="fa fa-folder"></i></div>
                                 <div class="row mt-2">
                                     <div class="col col-sm-10">'.$nombre.'</div>
@@ -130,8 +130,8 @@ $contenido = ContenidoControl::abrirDirectorio($ruta);
                                         <button type="button" class="float-right btn bg-transparent" id="item_'.$idItem.'_opciones" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <i class="fa fa-ellipsis-v"></i></button>
                                         <div class="dropdown-menu" aria-labelledby="item_'.$idItem.'_opciones">
-                                            <div class="dropdown-item">
-                                                <a href="./index.php?carpeta='.$ruta.'/'.$nombre.'" class="text-dark">Abrir</a>
+                                            <div class="dropdown-item abrir">
+                                                <a href="./index.php?carpeta='.$ruta.'/'.$nombre.'" class="text-dark btn-abrir">Abrir</a>
                                             </div>
                                             <div class="dropdown-item">
                                                 <a href="../compartirarchivo/index.php?archivo='.$ruta.'/'.$nombre.'" class="text-dark">Compartir</a>
@@ -171,8 +171,8 @@ $contenido = ContenidoControl::abrirDirectorio($ruta);
                                             <i class="fa fa-ellipsis-v"></i>
                                         </button>
                                         <div class="dropdown-menu" aria-labelledby="item_'.$idItem.'_opciones">
-                                            <div class="dropdown-item">
-                                                <a href="../../../'.$ruta.'/'.$nombre.'" target="_blanck" class="btn bg-transparent">
+                                            <div class="dropdown-item abrir">
+                                                <a href="../../../'.$ruta.'/'.$nombre.'" target="_blanck" class="btn bg-transparent btn-abrir">
                                                     Abrir
                                                 </a>
                                             </div>
@@ -209,6 +209,13 @@ $contenido = ContenidoControl::abrirDirectorio($ruta);
                     top: 0;
                     right: 0;
                 }
+                ul > .selected {
+                    border: 1px solid #C6C8DF!important;
+                    background: #E6E8F7!important;
+                }
+                ul > * {
+                    border-radius: 8px!important;
+                }
                 #nuevaCarpetaDropdown {
                     width: 300px!important;
                     padding-bottom: 0px;
@@ -240,8 +247,44 @@ $contenido = ContenidoControl::abrirDirectorio($ruta);
 
 <script>
     
-    $(document).ready({
+    $( document ).ready(function() {
 
+        /** Esta función cambia el estilo al elemento seleccionado
+         */
+        $("#contenido > *").on('click', function(){
+            // Primero remuevo la clase selected de todos los elementos
+            $('#contenido > *').removeClass('selected');
+            // Luego agrego esa clase al elemento que fue seleccionado
+            $(this).addClass('selected');
+        });
+
+        /** Ésta función abre la carpeta o archivo al que se le hace doble click
+         */
+        $("#contenido > *").on('dblclick', function(){
+            // Obtengo la ruta del elemento
+            let ruta = $(this).find('.btn-abrir').attr('href');
+            // Si es una carpeta, cambio la url de la página
+            if($(this).hasClass('folder'))
+            {
+                $(location).attr('href', ruta);
+                return false;
+            }
+            // Si es un archivo, lo abro en una nueva pestaña
+            else
+            {
+                window.open(ruta, '_blank');
+                return false;
+            }
+        });
+
+        /** Ésta función deselecciona todos los elementos cuando se hace click en un espacio en blanco
+         */
+        $("#contenido").on('click', function(e){
+            if ($(e.target).hasClass('list-group'))
+            {
+                $(this).children().removeClass('selected');
+            }
+        });
         
     });
 </script>
