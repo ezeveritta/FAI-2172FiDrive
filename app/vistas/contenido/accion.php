@@ -1,33 +1,45 @@
 <?php 
+
+include_once("../../../configuracion.php");
+include_once("../../controladores/ContenidoControl.php");
+
 /**
  * Alumno: Ezequiel Vera
  * Legajo: FAI-2172
  * Fecha: 30/09/2020
  */
 
-include_once("../../../configuracion.php");
-include_once("../../controladores/ContenidoControl.php");
-
-$Control = new ContenidoControl();
-
+$control = new ContenidoControl();
 $datos = data_submitted();
 
-// Verifico que acción se quiere realizaar
-
-/////////// ABRIR DIRECTORIO
-if (isset($datos["carpeta"]))
+// Verifico
+if (!isset($datos['accion']))
 {
-    // Cargo la página "contenido" y seteo la ruta a abrir
-    header("Location: index.php?carpeta=".$datos["carpeta"]);
+    header("Location: index.php?error=Ocurrió un error inesperado.");
     die();
-} 
-/////////// NUEVA CARPETA
-else
+}
+
+// Aplico
+switch ($datos['accion'])
 {
-    // Creo la carpeta
-    if( $Control->crearCarpeta($datos))
-    {
+    case 'crearCarpeta':
+        // Creo la carpeta
+        if (!$control->crearCarpeta($datos))
+        {
+            header("Location: index.php?error={$control->get_error()}.");
+            die();
+        }
+
+        // Operación exitosa, retorno a la vista anterior
         header("Location: index.php?carpeta=".$datos["ruta"]);
         die();
-    }
+
+    break;
+
+    case 'abrirCarpeta':
+        // Redirecciono a la vista 'contenido' con la ruta nueva
+        header("Location: index.php?carpeta=".$datos["carpeta"]);
+        die();
+    break;
 }
+

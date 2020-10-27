@@ -8,26 +8,36 @@
 class CompartirArchivoControl
 {
     private $ruta;
+    private $error;
 
     /**
-     * Esta función
+     * Esta función valida los datos del formulario
      * @param array $datos Contiene todos los datos provenientes del formulario
      * 
      * @return boolean
      */
     public function validar($datos)
     {
-        $operacion = false;
-
-        // Verificamos los datos
-        if (isset($datos['id']))
-            $operacion = true;
-
-        return $operacion;
+        if(!isset($datos['usuario']) || !isset($datos['vencimiento']) || !isset($datos['limite']))
+        {
+            $this->set_error('Uno ó más datos no se cargaron correctamente.');
+            return false;
+        }
+        
+        // Valido que el campo usuario esté seleccionado
+        if (strlen($datos['usuario']) == 0)
+        {
+            $this->set_error('El campo "usuario" debe ser seleccionado.');
+            return false;
+        }
+        
+        // Validación correcta
+        $this->set_error('');
+        return true;
     }
 
     /**
-     * Esta función
+     * Esta función actualiza la BD con la nueva información de compartir
      * @param array $datos Contiene todos los datos provenientes del formulario
      * 
      * @return boolean
@@ -35,49 +45,57 @@ class CompartirArchivoControl
     public function cargar($datos)
     {
         // Definimos las variables para un uso mas cómodo
-        $idACE = $datos['id'];
-        $usuario = $datos['usuario'];
+        $idArchivoCargadoEstado = $datos['id'];
+        $usuario     = $datos['usuario'];
         $vencimiento = $datos['vencimiento'];
-        $limite = $datos['limite'];
-        $contraseña = (isset($datos['contraseña']) ? $datos['contraseña'] : '');
-        $enlace = $datos['enlace'];
-        $dateTime = new DateTime();
+        $limite      = $datos['limite'];
+        $contraseña  = (isset($datos['contraseña']) ? $datos['contraseña'] : '');
+        $enlace      = $datos['enlace'];
+        $fechaInicio = new DateTime();
+        $fechaFin    = clone $fecha;
+        $fechaFin->add(new DateInterval("P{$vencimiento}D"));
 
         // Variables de este método
-        $operacion = false;
-        $AC = new ArchivoCargado();
-        $ACE = new ArchivoCargadoEstado();
+        $ArchivoCargado = new ArchivoCargado();
+        $ArchivoCargadoEstado = new ArchivoCargadoEstado();
 
-        $ACE->buscar($idACE);
-        $AC->buscar($ACE->get_archivoCargado()->get_id());
+        // Buscamos el archivocargado y archivocargadoestado que queremos modificar
+        $ArchivoCargadoEstado->buscar($idArchivoCargadoEstado);
+        $ArchivoCargado = ($ArchivoCargadoEstado->get_archivoCargado()->get_id());
+
+        // Guardo temporalmente para en caso de un error poder restablecer la información
+        $respaldo_ArchivoCargado = clone $ArchivoCargado;
 
         // Completamos la información de la tabla archivocargado
-        // idarchivocargado, acnombre, acdescripcion, acicono, idusuario, aclinkacceso, accantidaddescarga, accantidadusada, acfechainiciocompartir
-        // acefechafincompartir, acprotegidoclave
-        $AC->set_cantidadDescarga($limite);
-        $AC->set_fechaInicioCompartir($dateTime->format("Y-m-d H:i:s"));
-        $temp = $dateTime->add(new DateInterval('P'.$vencimiento.'D'));
-        $AC->set_fechaFinCompartir($dateTime->format("Y-m-d H:i:s"));
-        $AC->set_protegidoClave($contraseña);
+        $ArchivoCargado->set_cantidadDescarga($limite);
+        $ArchivoCargado->set_fechaInicioCompartir($fechaInicio->format("Y-m-d H:i:s"));
+        $ArchivoCargado->set_fechaFinCompartir($fechaFin->format("Y-m-d H:i:s"));
+        $ArchivoCargado->set_protegidoClave($contraseña);
 
-        // Intentamos modificar db archivocargado
-        if ($AC->modificar())
+        // Actualizamos archivocargado
+        if (!$ArchivoCargado->modificar())
         {
-            // Completamos la información de la tabla archivocargadoestado
-            $ACE->set_usuario($usuario);
-            $ACE->set_estadoTipos("2");
-            $ACE->set_descripcion("una descripción que no me acuerdo que poner...");
-            $ACE->set_fechaIngreso($dateTime->format("Y-m-d H:i:s"));
-            
-            // Intentamos modificar db
-            if ($ACE->modificar())
-            {
-                $operacion = true;
-                $this->set_ruta(dirname($AC->get_linkAcceso()));
-            } else { echo $ACE->get_error(); }
+            $this->set_error( $ArchivoCargado->get_error() );
+            return false;
+        }
 
-        } else { echo $AC->get_error(); }
+        // Completamos la información de la tabla archivocargadoestado
+        $ArchivoCargadoEstado->set_usuario($usuario);
+        $ArchivoCargadoEstado->set_estadoTipos("2");
+        $ArchivoCargadoEstado->set_descripcion("Archivo compartiendo");
+        $ArchivoCargadoEstado->set_fechaIngreso($dateTime->format("Y-m-d H:i:s"));
 
+        // Actualizamos archivocargadoestado
+         if (!$ArchivoCargadoEstado->modificar())
+        {
+            $respaldo_ArchivoCargado->modificar();  // Reestablesco los valores originales
+            $this->set_error( $ArchivoCargadoEstado->get_error() );
+            return false;
+        }
+
+        //Operación exitosa
+        $this->set_ruta( dirname($ArchivoCargado->get_linkAcceso()) );
+        $this->set_error('');
         return $operacion;
     }
 
@@ -92,48 +110,70 @@ class CompartirArchivoControl
         $arreglo = null;
 
         // Modelos a usar
-        $ACE = new ArchivoCargadoEstado();
-        $AC = new ArchivoCargado();
+        $ArchivoCargadoEstado = new ArchivoCargadoEstado();
+        $ArchivoCargado = new ArchivoCargado();
 
         // SI busco por ID
         if(isset($datos['id']))
         {
-            if ($ACE->buscar($id))
+            // Busco registro en la tabla archivocargadoestado
+            if (!$ArchivoCargadoEstado->buscar($id))
             {
-                if ($AC->buscar($ACE->get_archivoCargado()->get_id()))
-                {
-                    $arreglo['id'] = $AC->get_id();
-                    $arreglo['nombre'] = $AC->get_nombre();
-                    $arreglo['usuario'] = $ACE->get_usuario()->get_id();
-                    $arreglo['contraseña'] = $AC->get_protegidoClave();
-                    $arreglo['limite'] = $AC->get_cantidadDescarga();
-                    $arreglo['enlace'] = $AC->get_linkAcceso();
-                    $arreglo['fechaFin'] = $AC->get_fechaFinCompartir();
-                }
+                $this->set_error("No se encontró un registro con la id: {$datos['id']}");
+                return false;
             }
+            
+            // Busco registro en la tabla archivocargado
+            $idArchivoCargadoEstado = $ArchivoCargado->get_archivoCargado()->get_id();
+            if (!$ArchivoCargado->buscar($idArchivoCargadoEstado))
+            {
+                $this->set_error("No se encontró un registro con la id: $idArchivoCargadoEstado");
+                return false;
+            }
+
         }
+
         // Si busco por ruta
         else
         {
-            if ($AC->buscar($datos['archivo'], 'aclinkacceso'))
+            // Busco registro en la tabla archivocargado donde aclinkacceso es igual a la ruta pasada por parámetro
+            if (!$ArchivoCargado->buscar($datos['archivo'], 'aclinkacceso'))
             {
-                if ($ACE->buscar($AC->get_id()))
-                {
-                    $arreglo['id'] = $AC->get_id();
-                    $arreglo['nombre'] = $AC->get_nombre();
-                    $arreglo['usuario'] = $ACE->get_usuario()->get_id();
-                    $arreglo['contraseña'] = $AC->get_protegidoClave();
-                    $arreglo['limite'] = $AC->get_cantidadDescarga();
-                    $arreglo['enlace'] = $AC->get_linkAcceso();
-                    $arreglo['fechaFin'] = $AC->get_fechaFinCompartir();
-                }
+                $this->set_error("No se encontró un registro del archivo: {$datos['archivo']}");
+                return false;
             }
+
+            // Busco registro en la tabla archivocargadoestado con el id encontrado previamente
+            if (!$ArchivoCargadoEstado->buscar($ArchivoCargado->get_id()))
+            {
+                $this->set_error("No se encontró un registro perteneciente al id: {$ArchivoCargado->get_id()}");
+                return false;
+            }
+
         }
-        
+
+        // Si llegamos a éste punto, la operación fue exitosa
+        // Completo el arreglo a retornar
+        $arreglo['id'] = $ArchivoCargado->get_id();
+        $arreglo['nombre'] = $ArchivoCargado->get_nombre();
+        $arreglo['usuario'] = $ArchivoCargadoEstado->get_usuario()->get_id();
+        $arreglo['contraseña'] = $ArchivoCargado->get_protegidoClave();
+        $arreglo['limite'] = $ArchivoCargado->get_cantidadDescarga();
+        $arreglo['enlace'] = $ArchivoCargado->get_linkAcceso();
+        $arreglo['fechaFin'] = $ArchivoCargado->get_fechaFinCompartir();
+        $this->set_error('');
         return $arreglo;
     }
 
     // Métodos de acceso
     public function get_ruta(){ return $this->ruta; }
+    public function get_error(){ return $this->error; }
     public function set_ruta($data){ $this->ruta = $data; }
+    public function set_error($data){ $this->error = $data; }
+    public function __toString() 
+    {
+        return  "Objeto CompartirArchivocontrol:
+                 <br> Error: $this->get_error()
+                 <br> Ruta: $this->get_ruta()";
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Alumno: Ezequiel Vera
  * Legajo: FAI-2172
@@ -13,60 +14,100 @@ class AmarchivoControl
 
     public function __construct()
     {
+        $this->error = '';
         $this->ArchivoCargado = new ArchivoCargado();
+        $this->ArchivoCargadoEstado = new ArchivoCargadoEstado();
     }
 
     /**
-     * Esta valida que la información sea la esperada
+     * Éste método valida que la información sea la esperada
+     * @param array $datos Tiene todos los datos a subir a la bd
      * @param file $archivo Contiene el archivo a copiar
-     * @param string $datos Tiene todos los datos a subir a la bd
      * 
      * @return boolean
      */
-    public function validar($datos)
+    public function validar($datos, $archivo)
     {
-        $operacion = true;
+        // Valido que existan valores
+        if (!isset($datos['nombre']) || !isset($datos['usuario']) || !isset($datos['descripcion']) || !isset($datos['icono']) || $archivo == null)
+        {
+            $this->set_error('Uno ó más datos no se cargaron correctamente.');
+            return false;
+        }
+        
+        // Valido que el campo nombre no esté vacío
+        if (strlen($datos['nombre']) == 0)
+        {
+            $this->set_error('El campo "nombre" no debe quedar vacío.');
+            return false;
+        }
 
-        // Validamos
-        $operacion = (isset($datos["nombre"]) && isset($datos["usuario"]) && isset($datos["descripcion"]) && isset($datos["icono"]))
-                    ? true : false;
+        // Valido la extensión del archivo
+        $extension = pathinfo($archivo['name'], PATHINFO_EXTENSION);
+        $extensiones_permitidas = array('jpg', 'png', 'jpeg', 'gif', 'svg', 'webp', 'bpm', 'tiff',
+                                        'doc', 'docx', 'odt', 'rtf', 'txt', 'docm', 'dot', 'dotx', 'dotm',
+                                        'pdf',
+                                        'xls', 'xlsx', 'xlsm', 'xltx', 'xlt', 'ods',
+                                        'zip', 'rar', '7z', 'tar', 'hz', 'bin');
+                                        
+        if (!in_array(strtolower($extension), $extensiones_permitidas))
+        {
+            $this->set_error("Tipo de archivo no permitido: {$extension}");
+            return false;
+        }
         
-        // Funcion incompleta, se continua para la proxima entrega si la catedra lo requiere
-        
-        return $operacion;
+        // Validación correcta
+        $this->set_error('');
+        return true;
     }
-
+    
     /**
-     * Esta función copia el archivo pasado por parametros en la ruta especificada
-     * @param file $archivo Contiene el archivo a copiar
+     * Esta función carga los datos al servidor y copia el archivo
      * @param string $datos Tiene todos los datos a subir a la bd
+     * @param file $archivo Contiene el archivo a copiar
      * 
      * @return boolean
      */
     public function cargar($datos, $archivo)
     {
-        $operacion = false;
-
-        // Cargamos info a la base de datos
+        // Creamos el obj modelo y seteamos los datos
         $ArchivoCargado = new ArchivoCargado();
-        
-        $ArchivoCargado->cargar($datos["nombre"], $datos["descripcion"], $datos["icono"], $datos["ruta"].'/'.$datos["nombre"], '0', '0', '', '', '', $datos["usuario"]);
-        
-        // Copiamos el archivo y cargamos info
-        if ($ArchivoCargado->insertar() && $this->subir($archivo, $datos))
+        $ArchivoCargado->cargar($datos["nombre"], $datos["descripcion"], $datos["icono"], $datos["nombre"], '0', '0', '', '', '', $datos["usuario"]);
+
+        // Cargamos los datos a la tabla archivocargado
+        if (!$ArchivoCargado->insertar())
         {
-            // Ahora insertamos en la tabla archivocargadoestado
-            $ACE = new ArchivoCargadoEstado();
-            $ACE->cargar('Archivo recien cargado, aún no compartido.', '', '', '1', '1', $ArchivoCargado->get_id());
-            if ($ACE->insertar())
-            {
-                $operacion = true;
-                $this->set_archivoCargado($ArchivoCargado);
-                $this->set_archivoCargadoEstado($ACE);
-            }
+            $this->set_error($ArchivoCargado->get_error());
+            return false;
         }
 
-        return $operacion;
+        // Creamos el obj modelo y seteamos los datos
+        $ArchivoCargadoEstado = new ArchivoCargadoEstado();
+        $ArchivoCargadoEstado->cargar('Archivo recien cargado, aún no compartido.', '', '', '1', '1', $ArchivoCargado->get_id());
+
+        // Cargamos los datos a la tabla archivocargadoestado
+        if (!$ArchivoCargadoEstado->insertar())
+        {
+            $archivoCargado->eliminar(); // eliminamos lo cargado previamente
+            $this->set_error($ArchivoCargadoEstado->get_error());
+            return false;
+        }
+        
+        // Copiamos el archivo y cargamos info
+        $ruta_archivo = "../../../{$datos['ruta']}/$datos{['nombre']}";
+        if (!copy($archivo['tmp_name'], $ruta_archivo))
+        {
+            $archivoCargado->eliminar();       // eliminamos lo cargado previamente
+            $archivoCargadoEstado->eliminar(); // .
+            $this->set_error('No se pudo copiar el archivo al servidor.');
+            return false;
+        }
+
+        // Operación exitosa
+        $this->set_error('');
+        $this->set_archivoCargado($ArchivoCargado);
+        $this->set_archivoCargadoEstado($ArchivoCargadoEstado);
+        return true;
     }
 
     /**
@@ -172,10 +213,21 @@ class AmarchivoControl
     }
 
 
+
+    /**
+     * Métodos de acceso
+     */
     public function set_error ($data) { $this->error = $data; }
     public function set_archivoCargado ($data) { $this->archivoCargado = $data; }
     public function set_archivoCargadoEstado ($data) { $this->archivoCargadoEstado = $data; }
     public function get_error () { return $this->error; }
     public function get_archivoCargado () { return $this->archivoCargado; }
     public function get_archivoCargadoEstado () { return $this->archivoCargadoEstado; }
+    public function __toString() 
+    {
+        return  "Objeto AmarchivoControl:
+                 <br> Error: $this->get_error()
+                 <br> ArchivoCargado: $this->get_archivoCargado()
+                 <br> ArchivoCargadoEstado: $this->get_archivoCargadoEstado()";
+    }
 }

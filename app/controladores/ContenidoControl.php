@@ -7,27 +7,48 @@
 
 class ContenidoControl
 {
+    private $error;
+
+    public function __construct()
+    {
+        $this->error = '';
+    }
+
     /**
      * Esta función crea una carpeta en la ruta pasada por parametro y el nombre.
      * @param array $datos Contiene todos los datos provenientes del formulario
      * 
      * @return boolean
      */
-    public static function crearCarpeta($datos)
+    public function crearCarpeta($datos)
     {
-        $operacion = false;
-        $nombre = $datos["nombre"];
-        $ruta = '../../../' . $datos["ruta"] . '/' . $nombre;
-
-        // Verificamos los datos
-        if ($nombre != null)
+        // Validamos la información
+        if (!isset($datos['nombre']) || !isset($datos['ruta']))
         {
-            // Creamos la carpeta
-            $evento = mkdir($ruta, 0777);
-            $operacion = true;
+            $this->set_error("No se especificó un nombre.");
+            return false;
         }
 
-        return $operacion;
+        // Validamos el nombre de la carpeta
+        if (strpbrk($datos['nombre'], "\\/?%*:|\"<>"))
+        {
+            $this->set_error("Nombre contiene caracteres no admitidos.");
+            return false;
+        }
+
+        // Definimos la ruta a crear
+        $ruta = "../../../{$datos['ruta']}/{$datos['nombre']}";
+        
+        // Creamos la carpeta
+        if (!mkdir($ruta, 0777))
+        {
+            $this->set_error("Error al crear carpeta.");
+            return false;
+        }
+        
+        // Operación exitosa
+        $this->set_error('');
+        return true;
     }
 
     /**
@@ -61,5 +82,16 @@ class ContenidoControl
         } 
 
         return $respuesta;
+    }
+
+    /**
+     * Métodos de Acceso
+     */
+    public function get_error() { return $this->error; }
+    public function set_error($data) { $this->error = $data; }
+    public function __toString()
+    {
+        return "Objeto ContenidoControl:
+                <br> Error: {$this->get_error()}";
     }
 }

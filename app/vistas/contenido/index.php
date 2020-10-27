@@ -66,6 +66,7 @@ $contenido = ContenidoControl::abrirDirectorio($ruta);
                                                 <input type="text" class="form-control" id="nombre" name="nombre">
                                             </div>
                                             <input type="hidden" name="ruta" value="<?php echo $ruta ?>">
+                                            <input type="hidden" name="accion" value="crearCarpeta">
                                             <div class="col-sm-4">
                                                 <label for=""></label>
                                                 <button type="submit" class="btn btn-success btn-block mt-2 w-100">Crear</button>
@@ -131,7 +132,7 @@ $contenido = ContenidoControl::abrirDirectorio($ruta);
                                         <i class="fa fa-ellipsis-v"></i></button>
                                         <div class="dropdown-menu" aria-labelledby="item_'.$idItem.'_opciones">
                                             <div class="dropdown-item abrir">
-                                                <a href="./index.php?carpeta='.$ruta.'/'.$nombre.'" class="text-dark btn-abrir">Abrir</a>
+                                                <a href="./index.php?carpeta='.$ruta.'/'.$nombre.'&accion=abrirCarpeta" class="text-dark btn-abrir">Abrir</a>
                                             </div>
                                             <div class="dropdown-item">
                                                 <a href="../compartirarchivo/index.php?archivo='.$ruta.'/'.$nombre.'" class="text-dark">Compartir</a>
