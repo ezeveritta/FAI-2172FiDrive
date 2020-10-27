@@ -85,6 +85,40 @@ class ContenidoControl
     }
 
     /**
+     * Éste método retorna un string HTML correspondiente a la navegación de carpetas
+     * @param array $ruta
+     * @return string
+     */
+    public static function html_navegacion($ruta)
+    {
+        // Divido las rutas en un array
+        $arregloDirecciones = explode('/', $ruta);
+
+        // elimino los valores "" (sin contenido..)
+        //while(end($arregloDirecciones) == "") {array_pop($exp); }
+
+        // Por cada item, creo su elemento html
+        $HTML = '';
+        foreach ($arregloDirecciones as $indice => $nombreDirectorio)
+        {
+            // Omito los directorios sin nombre (doble barra)
+            if ($nombreDirectorio != '')
+            {
+                $HTML .= '<i class="fa fa-chevron-right px-2"></i>
+                          <a href="./index.php?carpeta=';
+                // Valor de href
+                for ($f=0; $f <= $indice; $f++)
+                {
+                    $HTML .=  "{$arregloDirecciones[$f]}/";
+                }
+                $HTML .=  '" class="text-muted">'."$nombreDirectorio</a>";
+            }
+        }
+
+        return $HTML;
+    }
+
+    /**
      * Métodos de Acceso
      */
     public function get_error() { return $this->error; }
