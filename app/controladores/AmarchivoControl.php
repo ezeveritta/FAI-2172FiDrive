@@ -72,7 +72,7 @@ class AmarchivoControl
     {
         // Creamos el obj modelo y seteamos los datos
         $ArchivoCargado = new ArchivoCargado();
-        $ArchivoCargado->cargar($datos["nombre"], $datos["descripcion"], $datos["icono"], $datos["nombre"], '0', '0', '', '', '', $datos["usuario"]);
+        $ArchivoCargado->cargar($datos["nombre"], $datos["descripcion"], $datos["icono"], $datos["ruta"].'/'.$datos["nombre"], '0', '0', '', '', '', $datos["usuario"]);
 
         // Cargamos los datos a la tabla archivocargado
         if (!$ArchivoCargado->insertar())
@@ -94,7 +94,7 @@ class AmarchivoControl
         }
         
         // Copiamos el archivo y cargamos info
-        $ruta_archivo = "../../../{$datos['ruta']}/$datos{['nombre']}";
+        $ruta_archivo = "../../../{$datos['ruta']}/{$datos['nombre']}";
         if (!copy($archivo['tmp_name'], $ruta_archivo))
         {
             $archivoCargado->eliminar();       // eliminamos lo cargado previamente

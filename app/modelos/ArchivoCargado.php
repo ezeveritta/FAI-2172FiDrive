@@ -77,7 +77,7 @@ class ArchivoCargado
 		    $query = "SELECT * from archivocargado  where ".$where." =" . $valor;
         }
         $output = false;
-        echo "<br><b>query</b>: ". $query;
+        
         // Inicio conexión con bd
         if($bd->Iniciar())
         {
@@ -183,8 +183,7 @@ class ArchivoCargado
 				   VALUES ('".$this->get_nombre()."','".$this->get_descripcion()."','".$this->get_icono()."','".$this->get_linkAcceso()."',".$this->get_cantidadDescarga()
                             .",".$this->get_cantidadUsada().",'".$this->get_fechaInicioCompartir()."','".$this->get_fechaFinCompartir()
                             ."','".$this->get_protegidoClave()."',".$this->get_usuario()->get_id().")";
-                            
-echo $query;    
+                 
         // Iniciamos conexión
         if($bd->Iniciar())
         {

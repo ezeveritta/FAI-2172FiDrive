@@ -1,4 +1,5 @@
 <?php 
+
 include_once("../../controladores/CompartirArchivoControl.php");
 include_once('../../modelos/BaseDatos.php');
 include_once('../../modelos/ArchivoCargado.php');
@@ -11,27 +12,23 @@ include_once("../../../configuracion.php");
  * Fecha: 30/09/2020
  */
 
-// datos: usuario, vencimiento, limite, proteger, contraseña, enlace, id
+$control = new CompartirArchivoControl();
 $datos = data_submitted();
 
-// Objeto Control
-$control = new CompartirArchivoControl();
-
 // Verificamos que los campos sean validos
-if ($control->validar($datos))
+if (!$control->validar($datos))
 {
-    // Si se carga, regresamos a la vista contenido
-    if ($control->cargar($datos))
-    {
-        header("Location: ../contenido/index.php?carpeta=".$control->get_ruta());
-        die;
-    } 
-    // Si hay un error, vuelvo al formulario
-    else
-    {
-        header("Location: ./compartirarchivo/index.php?error=true");
-        die;
-    }
-} else { echo "nope <br><br>"; print_r($datos);}
+    header( "Location: index.php?id={$datos['id']}&error={$control->get_error()}" );
+    die;
+}
 
-?>
+// Si hay un error, vuelvo al formulario
+if (!$control->cargar($datos))
+{
+    header( "Location: index.php?id={$datos['id']}&error={$control->get_error()}" );
+    die;
+} 
+
+// Si se carga, regresamos a la vista contenido
+header( "Location: ../contenido/index.php?carpeta={$control->get_ruta()}" );
+die;

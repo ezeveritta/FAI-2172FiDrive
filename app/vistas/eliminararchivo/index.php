@@ -1,15 +1,45 @@
 <?php 
+
+$Titulo = "Alta-Mod Archivo"; 
+include_once("../estructura/cabecera.php");
+include_once('../../modelos/BaseDatos.php');
+include_once("../../modelos/Usuario.php");
+include_once('../../modelos/ArchivoCargado.php');
+include_once('../../modelos/ArchivoCargadoEstado.php');
+include_once("../../controladores/EliminarArchivoControl.php");
+
 /**
  * Alumno: Ezequiel Vera
  * Legajo: FAI-2172
  * Fecha: 30/09/2020
  */
 
-$Titulo = "Alta-Mod Archivo"; 
-include_once("../estructura/cabecera.php");
-
+$control = new EliminarArchivoControl();
 $datos = data_submitted();
 
+// Si no hay identificador del archivo, vuelvo a la vista "contenido"
+if (!isset($datos['id']) && !isset($datos['archivo']))
+{
+    header("Location: ../contenido/index.php?error=Se esperaba un identificador.");
+    die;
+}
+
+// Obtengo información de
+$info = $control->get_info($datos);
+
+// Verifico que se encontró un registro en la BD
+if ($info == null)
+{
+    echo "..";
+    //header("Location: ../contenido/index.php?error={$control->get_error()}");
+    die;
+}
+
+// Defino variables para mayor comodidad
+$idArchivoCargado = $info['idArchivoCargado'];
+$idArchivoCargadoEstado = $info['idArchivoCargadoEstado'];
+$archivo = $info['archivo'];
+$nombre = $info['nombre'];
 ?>
 <!-- Contenido -->
 <div class="col-md-10">
@@ -23,16 +53,20 @@ $datos = data_submitted();
 
                         <div class="form-group mt-2 col-sm-12">
                             <h6><label class="">Nombre de Archivo</label></h6>
-                            <div class="border rounded form-control"><b><?php echo (isset($datos["archivo"])) ? $datos["archivo"] : "1234.png"?></b></div>
+                            <div class="border rounded form-control"><b><?php echo ($nombre) ? $nombre : "1234.png"?></b></div>
                             <div class="invalid-feedback"></div>
                         </div>
 
                         <div class="form-group mt-2 col-sm-12">
                             <h6><label class="" for="usuario">Usuario</label></h6>
                             <select name="usuario" id="usuario" class="form-control">
-                                <option value="admin">Admin</option>
-                                <option value="visitante">Visitante</option>
-                                <option value="usted">usted</option>
+                                <?php
+                                foreach (Usuario::listar() as $user)
+                                {
+                                    $selected = ($user->get_id() == $usuario) ? 'selected="selected"' : '';
+                                    echo '<option value="'.$user->get_id().'" '.$selected.'>'.$user->get_apellido().'</option>';
+                                }
+                                ?>
                             </select>
                             <div class="invalid-feedback"></div>
                         </div>
@@ -43,8 +77,11 @@ $datos = data_submitted();
                             <div class="invalid-feedback"></div>
                         </div>
 
+                        <input type="hidden" name="idArchivoCargadoEstado" value="<?php echo $idArchivoCargadoEstado ?>">
+                        <input type="hidden" name="idArchivoCargado" value="<?php echo $idArchivoCargado ?>">
+                        <input type="hidden" name="archivo" value="<?php echo $archivo ?>">
                         <div class="col-sm-12 mt-5">
-                            <button type="submit" class="btn btn-primary btn-lg w-100">Guardar</button>
+                            <button type="submit" class="btn btn-primary btn-lg w-100">Eliminar</button>
                         </div>
                     </div>
                 </form>

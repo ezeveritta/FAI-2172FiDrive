@@ -52,7 +52,7 @@ class CompartirArchivoControl
         $contraseña  = (isset($datos['contraseña']) ? $datos['contraseña'] : '');
         $enlace      = $datos['enlace'];
         $fechaInicio = new DateTime();
-        $fechaFin    = clone $fecha;
+        $fechaFin    = new DateTime();
         $fechaFin->add(new DateInterval("P{$vencimiento}D"));
 
         // Variables de este método
@@ -61,10 +61,10 @@ class CompartirArchivoControl
 
         // Buscamos el archivocargado y archivocargadoestado que queremos modificar
         $ArchivoCargadoEstado->buscar($idArchivoCargadoEstado);
-        $ArchivoCargado = ($ArchivoCargadoEstado->get_archivoCargado()->get_id());
+        $ArchivoCargado = $ArchivoCargadoEstado->get_archivoCargado();
 
         // Guardo temporalmente para en caso de un error poder restablecer la información
-        $respaldo_ArchivoCargado = clone $ArchivoCargado;
+        $respaldo_ArchivoCargado = $ArchivoCargado;
 
         // Completamos la información de la tabla archivocargado
         $ArchivoCargado->set_cantidadDescarga($limite);
@@ -83,7 +83,7 @@ class CompartirArchivoControl
         $ArchivoCargadoEstado->set_usuario($usuario);
         $ArchivoCargadoEstado->set_estadoTipos("2");
         $ArchivoCargadoEstado->set_descripcion("Archivo compartiendo");
-        $ArchivoCargadoEstado->set_fechaIngreso($dateTime->format("Y-m-d H:i:s"));
+        $ArchivoCargadoEstado->set_fechaIngreso($fechaInicio->format("Y-m-d H:i:s"));
 
         // Actualizamos archivocargadoestado
          if (!$ArchivoCargadoEstado->modificar())
@@ -96,7 +96,7 @@ class CompartirArchivoControl
         //Operación exitosa
         $this->set_ruta( dirname($ArchivoCargado->get_linkAcceso()) );
         $this->set_error('');
-        return $operacion;
+        return true;
     }
 
      /**
@@ -117,14 +117,14 @@ class CompartirArchivoControl
         if(isset($datos['id']))
         {
             // Busco registro en la tabla archivocargadoestado
-            if (!$ArchivoCargadoEstado->buscar($id))
+            if (!$ArchivoCargadoEstado->buscar($datos['id']))
             {
                 $this->set_error("No se encontró un registro con la id: {$datos['id']}");
                 return false;
             }
             
             // Busco registro en la tabla archivocargado
-            $idArchivoCargadoEstado = $ArchivoCargado->get_archivoCargado()->get_id();
+            $idArchivoCargadoEstado = $ArchivoCargadoEstado->get_archivoCargado()->get_id();
             if (!$ArchivoCargado->buscar($idArchivoCargadoEstado))
             {
                 $this->set_error("No se encontró un registro con la id: $idArchivoCargadoEstado");

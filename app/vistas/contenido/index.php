@@ -180,9 +180,8 @@ $contenido = ContenidoControl::abrirDirectorio($ruta);
                                                 </form>
                                             </div>
                                             <div class="dropdown-item">
-                                                <form action="../eliminararchivo/index.php" method="post">
-                                                    <input type="hidden" name="archivo" value="'.$nombre.'">
-                                                    <input type="hidden" name="ruta" value="'.$ruta.'">
+                                                <form action="../eliminararchivo/index.php" method="get">
+                                                    <input type="hidden" name="archivo" value="'.$ruta.'/'.$nombre.'">
                                                     <button type="submit" class="btn bg-transparent text-danger">
                                                         <i class="fa fa-trash-alt"></i>
                                                         <span>Eliminar</span>

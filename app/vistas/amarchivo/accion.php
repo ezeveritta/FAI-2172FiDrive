@@ -17,7 +17,7 @@ $datos = data_submitted();
 
 if (!isset($datos['accion']))
 {
-    header("Location: ../amarchivo/index.php?error=No se especifica si es Alta o Modificación");
+    header( "Location: ../amarchivo/index.php?error=No se especifica si es Alta o Modificación" );
     die;
 }
 
@@ -28,17 +28,17 @@ switch ($datos['accion'])
         // Validamos
         if (!$control->validar($datos, $_FILES["archivo"]))
         {
-            header("Location: ../amarchivo/index.php?error={$control->get_error()}");
+            header( "Location: ../amarchivo/index.php?error={$control->get_error()}" );
             die;
         }
         // Cargamos la información y el archivo
         if (!$control->cargar($datos, $_FILES["archivo"]))
         {
-            header("Location: ../amarchivo/index.php?error={$control->get_error()}");
+            header( "Location: ../amarchivo/index.php?error={$control->get_error()}" );
             die;
         } 
         // Cambiamos a la página compartirarchivo
-        header("Location: ../compartirarchivo/index.php?id=".$control->get_archivoCargado()->get_id());
+        header( "Location: ../compartirarchivo/index.php?id={$control->get_archivoCargado()->get_id()}" );
         die;
     break;
 
@@ -46,18 +46,18 @@ switch ($datos['accion'])
         // Validamos
         if (!$control->validar($datos))
         {
-            header("Location: ../amarchivo/index.php?error={$control->get_error()}");
+            header( "Location: ../amarchivo/index.php?error={$control->get_error()}" );
             die;
         }
         // Cargamos la información y el archivo
         if (!$control->modificar($datos))
         {
-            header("Location: ../amarchivo/index.php?error={$control->get_error()}");
+            header( "Location: ../amarchivo/index.php?error={$control->get_error()}" );
             die;
         } 
         // Cambiamos a la página contenido
         $ruta = dirname($control->get_archivoCargado()->get_linkAcceso());
-        header("Location: ../compartirarchivo/index.php?id={$control->get_archivoCargado()->get_id()}");
+        header( "Location: ../compartirarchivo/index.php?id={$control->get_archivoCargado()->get_id()}" );
         die;
     break;
 }
