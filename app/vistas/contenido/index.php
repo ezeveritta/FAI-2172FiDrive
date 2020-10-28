@@ -15,7 +15,9 @@ $datos = data_submitted();
 $control = new ContenidoControl();
 
 // Carpeta Actual
-$ruta = (isset($datos['carpeta'])) ? $datos['carpeta'] : 'archivos';
+$ruta = (isset($datos['carpeta'])) ? limpiarRuta($datos['carpeta']) : 'archivos';
+// Limpio las dobles barras (//) que a veces quedan
+
 
 // Obtengo un array de contenido ["carpetas", "archivos"]
 $contenido = ContenidoControl::abrirDirectorio($ruta);
@@ -162,7 +164,7 @@ $contenido = ContenidoControl::abrirDirectorio($ruta);
                                                 </a>
                                             </div>
                                             <div class="dropdown-item">
-                                                <form action="../amarchivo/index.php" method="post">
+                                                <form action="../amarchivo/index.php" method="get">
                                                     <input type="hidden" name="archivo" value="'.$ruta.'/'.$nombre.'">
                                                     <button type="submit" class="btn bg-transparent">
                                                         <i class="fa fa-edit text-muted"></i>

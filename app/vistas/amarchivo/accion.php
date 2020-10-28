@@ -44,20 +44,21 @@ switch ($datos['accion'])
 
     case 'Modificar':
         // Validamos
-        if (!$control->validar($datos))
-        {
+        if (!$control->validar($datos, false)) {
             header( "Location: ../amarchivo/index.php?error={$control->get_error()}" );
             die;
         }
+        
         // Cargamos la información y el archivo
         if (!$control->modificar($datos))
         {
             header( "Location: ../amarchivo/index.php?error={$control->get_error()}" );
             die;
-        } 
+        }
+
         // Cambiamos a la página contenido
         $ruta = dirname($control->get_archivoCargado()->get_linkAcceso());
-        header( "Location: ../compartirarchivo/index.php?id={$control->get_archivoCargado()->get_id()}" );
+        header( "Location: ../contenido/index.php?carpeta={$ruta}" );
         die;
     break;
 }

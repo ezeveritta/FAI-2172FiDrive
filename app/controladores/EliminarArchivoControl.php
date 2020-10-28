@@ -37,7 +37,7 @@ class EliminarArchivoControl
     }
 
     /**
-     * Esta función elimina de la BD los reguistros correspondiente al arhivo y lo elimina del servidor
+     * Esta función actualiza la información de la BD, cambiando en tabla "archivocargadoestado" el campo "idestadotipos" = eliminado (4)
      * @param array $datos Contiene todos los datos provenientes del formulario
      * 
      * @return boolean
@@ -64,20 +64,16 @@ class EliminarArchivoControl
         $respaldo_ArchivoCargadoEstado = $ArchivoCargadoEstado;
 
         // Actualizamos archivocargadoestado
-         if (!$ArchivoCargadoEstado->eliminar())
+        $ArchivoCargadoEstado->set_estadoTipos('4');
+        $ArchivoCargadoEstado->set_descripcion($descripcion);
+        $ArchivoCargadoEstado->set_usuario($usuario);
+         if (!$ArchivoCargadoEstado->modificar())
         {
             $this->set_error( $ArchivoCargadoEstado->get_error() );
             return false;
         }
 
-        // Actualizamos archivocargado
-        if (!$ArchivoCargado->eliminar())
-        {
-            //$respaldo_ArchivoCargadoEstado->subir();  // Reestablesco los valores originales
-            $this->set_error( $ArchivoCargado->get_error() );
-            return false;
-        }
-
+        /*
         // Eliminamos el archivo del servidor
         if (!unlink('../../../'.$archivo))
         {
@@ -86,7 +82,8 @@ class EliminarArchivoControl
             //$respaldo_ArchivoCargadoEstado->insertar();  // Reestablesco los valores originales
             $this->set_error( "No se pudo eliminar el archivo." );
             return false;
-        }
+        } 
+        */
 
         //Operación exitosa
         $this->set_ruta( dirname($ArchivoCargado->get_linkAcceso()) );

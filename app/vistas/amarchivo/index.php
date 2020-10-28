@@ -29,9 +29,9 @@ $usuario = $info['usuario'];
 $descripcion = $info['descripcion'];
 $icono = $info['icono'];
 $clave = $info['clave'];
+$id = $info['id'];
 
 ?>
-
 <!-- Contenido -->
 <div class="col-md-10 col-xs-12">
     <div class="row h-100">
@@ -43,7 +43,7 @@ $clave = $info['clave'];
                         <h5 class="mt-3 text-center w-100">Alta - Modificación de Archivo</h5>
 
                         <?php
-                        if($nombre == null)
+                        if($clave == 0)
                         {
                         ?>
                         <div class="form-group col-sm-12">
@@ -91,7 +91,7 @@ $clave = $info['clave'];
                             <h6 class="w-100"><b>Seleccione icono para usar</b></h6>
                             
                             <label for="icono_imagen" class="border rounded p-2 mr-2">
-                                <input type="radio" name="icono" value="imagen" id="icono_imagen" <?php if($icono == 'Imagen') echo 'checked'; ?>>
+                                <input type="radio" name="icono" value="imagen" id="icono_imagen" <?php if($icono == 'imagen') echo 'checked'; ?>>
                                 <i class="fas fa-image"></i>
                                 Imagen
                             </label>
@@ -126,7 +126,7 @@ $clave = $info['clave'];
                         <?php $accion = ($clave == "0") ? "Alta" : "Modificar" ?>
                         <input type="hidden" name="accion" id="accion" value="<?php echo $accion ?>">
                         <input type="hidden" name="ruta" value="<?php echo $ruta?>">
-                        <input type="hidden" name="id" value="<?php echo $datos['id']?>">
+                        <input type="hidden" name="id" value="<?php echo $id?>">
                         <div class="col-sm-12">
                             <button type="submit" class="btn btn-primary btn-lg mt-3 mb-3 w-100">Enviar</button>
                         </div>

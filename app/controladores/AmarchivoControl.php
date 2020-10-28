@@ -3,7 +3,7 @@
 /**
  * Alumno: Ezequiel Vera
  * Legajo: FAI-2172
- * Fecha: /10/2020
+ * Fecha: 24/10/2020
  */
 
 class AmarchivoControl
@@ -26,10 +26,10 @@ class AmarchivoControl
      * 
      * @return boolean
      */
-    public function validar($datos, $archivo)
+    public function validar($datos, $archivo = false)
     {
         // Valido que existan valores
-        if (!isset($datos['nombre']) || !isset($datos['usuario']) || !isset($datos['descripcion']) || !isset($datos['icono']) || $archivo == null)
+        if (!isset($datos['nombre']) || !isset($datos['usuario']) || !isset($datos['descripcion']) || !isset($datos['icono']) || $archivo === null)
         {
             $this->set_error('Uno ó más datos no se cargaron correctamente.');
             return false;
@@ -42,18 +42,22 @@ class AmarchivoControl
             return false;
         }
 
-        // Valido la extensión del archivo
-        $extension = pathinfo($archivo['name'], PATHINFO_EXTENSION);
-        $extensiones_permitidas = array('jpg', 'png', 'jpeg', 'gif', 'svg', 'webp', 'bpm', 'tiff',
-                                        'doc', 'docx', 'odt', 'rtf', 'txt', 'docm', 'dot', 'dotx', 'dotm',
-                                        'pdf',
-                                        'xls', 'xlsx', 'xlsm', 'xltx', 'xlt', 'ods',
-                                        'zip', 'rar', '7z', 'tar', 'hz', 'bin');
-                                        
-        if (!in_array(strtolower($extension), $extensiones_permitidas))
+        if ($archivo != false)
         {
-            $this->set_error("Tipo de archivo no permitido: {$extension}");
-            return false;
+            // Valido la extensión del archivo
+            $extension = pathinfo($archivo['name'], PATHINFO_EXTENSION);
+            $extensiones_permitidas = array(
+                'jpg', 'png', 'jpeg', 'gif', 'svg', 'webp', 'bpm', 'tiff',
+                'doc', 'docx', 'odt', 'rtf', 'txt', 'docm', 'dot', 'dotx', 'dotm',
+                'pdf',
+                'xls', 'xlsx', 'xlsm', 'xltx', 'xlt', 'ods',
+                'zip', 'rar', '7z', 'tar', 'hz', 'bin'
+            );
+
+            if (!in_array(strtolower($extension), $extensiones_permitidas)) {
+                $this->set_error("Tipo de archivo no permitido: {$extension}");
+                return false;
+            }
         }
         
         // Validación correcta
@@ -88,7 +92,7 @@ class AmarchivoControl
         // Cargamos los datos a la tabla archivocargadoestado
         if (!$ArchivoCargadoEstado->insertar())
         {
-            $archivoCargado->eliminar(); // eliminamos lo cargado previamente
+            $ArchivoCargado->eliminar(); // eliminamos lo cargado previamente
             $this->set_error($ArchivoCargadoEstado->get_error());
             return false;
         }
@@ -97,8 +101,8 @@ class AmarchivoControl
         $ruta_archivo = "../../../{$datos['ruta']}/{$datos['nombre']}";
         if (!copy($archivo['tmp_name'], $ruta_archivo))
         {
-            $archivoCargado->eliminar();       // eliminamos lo cargado previamente
-            $archivoCargadoEstado->eliminar(); // .
+            $ArchivoCargado->eliminar();       // eliminamos lo cargado previamente
+            $ArchivoCargadoEstado->eliminar(); // .
             $this->set_error('No se pudo copiar el archivo al servidor.');
             return false;
         }
@@ -118,96 +122,105 @@ class AmarchivoControl
      */
     public function modificar($datos)
     {
-        $operacion = false;
-
         // Cargamos info a la base de datos
         $ArchivoCargado = new ArchivoCargado();
         
         // Buscamos la tupla en la BD
-        if ($ArchivoCargado->buscar($datos['id']))
+        if (!$ArchivoCargado->buscar($datos['id']))
         {
-            $linkNuevo = dirname($datos["ruta"]).'/'.$datos["nombre"];
-            $ArchivoCargado->set_descripcion($datos['descripcion']);
-            $ArchivoCargado->set_usuario($datos['usuario']);
-            $ArchivoCargado->set_icono($datos['icono']);
-            $ArchivoCargado->set_nombre($datos['nombre']);
-            rename('../../../'.$ArchivoCargado->get_linkAcceso(), '../../../'.$linkNuevo);
-            $ArchivoCargado->set_linkAcceso($linkNuevo);
-
-            if ($ArchivoCargado->modificar())
-            {
-                $this->set_archivoCargado($ArchivoCargado);
-                $operacion = true;
-            }
+            $this->set_error('No se encontró registro para modificar.');
+            return false;
         }
 
-        return $operacion;
-    }
+        // Seteamos nuevos datos
+        $linkViejo = $ArchivoCargado->get_linkAcceso();
+        $linkNuevo = dirname($datos["ruta"]) . '/' . $datos["nombre"];
+        $ArchivoCargado->set_descripcion($datos['descripcion']);
+        $ArchivoCargado->set_usuario($datos['usuario']);
+        $ArchivoCargado->set_icono($datos['icono']);
+        $ArchivoCargado->set_nombre($datos['nombre']);
+        $ArchivoCargado->set_linkAcceso($linkNuevo);
 
-
-    /**
-     * Esta función copia el archivo pasado por parametros en la ruta especificada
-     * @param file $archivo Contiene el archivo a copiar
-     * @param string $direccion la ruta donde se quiere copiar el archivo
-     * 
-     * @return boolean
-     */
-    public function subir($archivo, $datos)
-    {
-        $operacion = false;
-
-        // Intentamos copiar el archivo al servidor.
-        if (!copy($archivo['tmp_name'], "../../../".$datos["ruta"].'/'.$datos["nombre"]))
+        // Modificamos el archivo local
+        if (!rename('../../../' . $linkViejo, '../../../' . $linkNuevo))
         {
-            $this->set_error("ERROR: no se pudo cargar el archivo");
-        } else
-        {
-            $operacion = true;
+            $this->set_error('No se pudo modificar el archivo en el servidor.');
+            return false;
         }
 
-        return $operacion;
+        // Modificamos la BD
+        if (!$ArchivoCargado->modificar()) {
+            $this->set_error('No se pudo modificar la Base de Datos.');
+            return false;
+        }
+
+        // Operación exitosa
+        $this->set_error('');
+        $this->set_archivoCargado($ArchivoCargado);
+        return true;
     }
 
     /**
-     * Esta función retorna la información obtenida de las tablas "archivocargado" y "archivocargadoestado" segun la id
-     * @param string $datos [ruta o id]
+     * Esta función retorna la información obtenida de las tablas "archivocargado" segun la id ó el linkacceso
+     * @param mixed $datos [clave, ruta o id]
      * 
      * @return array 
      */
     public function get_info($datos)
     {
-        $arreglo = array();
-
         // Modelos a usar
-        $ACE = new ArchivoCargadoEstado();
-        $AC = new ArchivoCargado();
+        $ArchivoCargado = new ArchivoCargado();
 
-        // Si hay un id
-        if (isset($datos['id']))
-        {
-            // Busco la información
-            if ($ACE->buscar($datos['id']))
-            {
-                if ($AC->buscar($ACE->get_archivoCargado()->get_id()))
-                {
-                    $arreglo['nombre'] = $AC->get_nombre();
-                    $arreglo['usuario'] = $AC->get_usuario()->get_id();
-                    $arreglo['descripcion'] = $AC->get_descripcion();
-                    $arreglo['icono'] = $AC->get_icono();
-                    $arreglo['clave'] = 1; // Acción: MODIFICAR
-                    $arreglo['ruta'] = $AC->get_linkAcceso();
-                }
+        // Arreglo base a retornar
+        $arreglo = array(
+            'nombre' => "1234.png",
+            'usuario' => "1",
+            'descripcion' => "<b>Esta es</b> una descripción genérica, si lo necesita la puede <i>cambiar</i>.",
+            'icono' => "",
+            'clave' => 0,
+            'ruta' => "archivos",
+            'id' => null
+        );
+
+        // Si la página se cargó sin parámetros
+        if (count($datos) == 0) {
+            if (isset($datos['ruta']))
+                $arreglo['ruta'] = $datos['ruta'];
+            return $arreglo;
+        }
+
+        // Si está el parámetro 'clave' y 'ruta'
+        if (isset($datos['clave'])) {
+            if (isset($datos['ruta']))
+                $arreglo['ruta'] = $datos['ruta'];
+            return $arreglo;
+        }
+        
+        // SI busco por ID
+        if (isset($datos['id'])) {
+            // Busco registro en la tabla archivocargadoestado
+            if (!$ArchivoCargado->buscar($datos['id'])) {
+                $this->set_error("No se encontró un registro con la id: {$datos['id']}");
+                return $arreglo;
             }
         }
-        else
-        {
-            $arreglo['nombre'] = null;
-            $arreglo['usuario'] = null;
-            $arreglo['descripcion'] = null;
-            $arreglo['icono'] = null;
-            $arreglo['clave'] = 0; // Acción: ALTA
-            $arreglo['ruta'] = (isset($datos['ruta'])) ? $datos['ruta'] : 'archivos';
+
+        // Si busco por ruta
+        elseif (isset($datos['archivo'])) {
+            // Busco registro en la tabla archivocargado donde aclinkacceso es igual a la ruta pasada por parámetro
+            if (!$ArchivoCargado->buscar($datos['archivo'], 'aclinkacceso')) {
+                $this->set_error("No se encontró un registro del archivo: {$datos['archivo']}");
+                return $arreglo;
+            }
         }
+        
+        $arreglo['nombre'] = $ArchivoCargado->get_nombre();
+        $arreglo['usuario'] = $ArchivoCargado->get_usuario()->get_id();
+        $arreglo['descripcion'] = $ArchivoCargado->get_descripcion();
+        $arreglo['icono'] = $ArchivoCargado->get_icono();
+        $arreglo['clave'] = 1;
+        $arreglo['ruta'] = $ArchivoCargado->get_linkAcceso();
+        $arreglo['id'] = $ArchivoCargado->get_id();
         
         return $arreglo;
     }

@@ -60,7 +60,7 @@ class ContenidoControl
     public static function abrirDirectorio($ruta)
     {
         $respuesta = false;
-        $ruta = '../../../' . $ruta . '/';
+        $ruta = '../../../' . $ruta;
 
         $direccion = opendir($ruta);
         $archivos = array();

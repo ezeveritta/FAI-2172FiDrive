@@ -65,6 +65,11 @@ function icono_archivo($tipo)
 	return $salida;
 }
 
+function limpiarRuta($string)
+{
+	return preg_replace('#/+#', '/', $string);
+}
+
 
 spl_autoload_register(function ($clase) {
 	echo "Cargamos la clase  ".$clase."<br>" ;
