@@ -20,7 +20,12 @@ $ruta = (isset($datos['carpeta'])) ? limpiarRuta($datos['carpeta']) : 'archivos'
 
 
 // Obtengo un array de contenido ["carpetas", "archivos"]
-$contenido = ContenidoControl::abrirDirectorio($ruta);
+$contenido = $control->abrirDirectorio($ruta);
+
+//print_r($datos);
+// Reordeno el contenido
+if (isset($datos['orden']) &&  isset($datos['direccion']))
+    $contenido = $control->ordenarContenido($ruta, $contenido, $datos['orden'], $datos['direccion']);
 
 ?>
 
@@ -95,6 +100,49 @@ $contenido = ContenidoControl::abrirDirectorio($ruta);
                                     </button>
                                 </form>
                             </li>
+
+                            <!-- Ordenar -->
+                            <li class="nav-item dropdown ml-3">
+                                <button type="button" class="btn btn-sm p-2" id="ordenar" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="border-radius: 10px; background: white; border: 1px solid grey; color: #444">
+                                    <i class="fa fa-filter pl-4"></i>
+                                    Ordenar
+                                    <i class="fa fa-sort-down" style="padding-left: 25px; transform: translateY(-2px);"></i>
+                                </button>
+
+                                <div class="dropdown-menu mt-2" aria-labelledby="ordenar" id="ordenarDropdown" style="border-radius: 10px;">
+                                    <a href="./index.php?carpeta=<?php echo $ruta; ?>&orden=nombre&direccion=descendente">
+                                        <i class="fa fa-sort-alpha-down ml-2"></i>
+                                        Nombre
+                                    </a>
+                                    <a href="./index.php?carpeta=<?php echo $ruta; ?>&orden=nombre&direccion=ascendente">
+                                        <i class="fa fa-sort-alpha-down-alt ml-2"></i>
+                                        Nombre
+                                    </a>
+                                    <a href="./index.php?carpeta=<?php echo $ruta; ?>&orden=tamaño&direccion=descendente">
+                                        <i class="fa fa-sort-amount-up ml-2"></i>
+                                        Tamaño
+                                    </a>
+                                    <a href="./index.php?carpeta=<?php echo $ruta; ?>&orden=tamaño&direccion=ascendente">
+                                        <i class="fa fa-sort-amount-down-alt ml-2"></i>
+                                        Tamaño
+                                    </a>
+                                </div>
+                                <style>
+                                    #ordenarDropdown form>div>div {
+                                        padding: 4px !important;
+                                    }
+
+                                    #ordenarDropdown a {
+                                        display: block;
+                                        padding: 10px 5px;
+                                        color: grey;
+                                    }
+
+                                    #ordenarDropdown {
+                                        padding: 0px 15px !important;
+                                    }
+                                </style>
+                            </li>
                         </ul>
                     </div>
                 </nav>
@@ -133,20 +181,33 @@ $contenido = ContenidoControl::abrirDirectorio($ruta);
                     }
 
                     .custom-item {
+                        width: 184px;
+                        height: 140px;
+                        padding: 0px 0px -4px 0px;
                         cursor: pointer;
+                        font-weight: 500;
+                    }
+
+                    .custom-item .titulo {
+                        color: #252525 !important;
                     }
 
                     .custom-item .icono {
                         transform: translateY(20px);
                     }
-                    
+
                     .custom-item:hover .opciones {
                         display: inline-block !important;
                     }
 
-                    .custom-folder img {
+                    .custom-item img {
                         height: 100% !important;
                         border-radius: 5px;
+                        transform: translateX(-5px);
+                    }
+
+                    .custom-folder .icono {
+                        color: #555;
                     }
 
                     ul a>i {
@@ -159,21 +220,20 @@ $contenido = ContenidoControl::abrirDirectorio($ruta);
                         margin-right: 14px;
                     }
 
-                    ul .custom-folder {
-                        width: 184px;
-                        height: 140px;
-                        padding: 0px 0px -4px 0px;
-                    }
-
                     ul .opciones {
                         position: fixed;
                         top: 0;
                         right: 0;
                     }
 
-                    ul>.selected {
+                    .custom-item.selected {
                         border: 1px solid #C6C8DF !important;
                         background: #E6E8F7 !important;
+                    }
+
+                    .custom-item.selected.archivo {
+                        border: 1px solid #cfc9bc !important;
+                        background: #ebebd1 !important;
                     }
 
                     ul>* {

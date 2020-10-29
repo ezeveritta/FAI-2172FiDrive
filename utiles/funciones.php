@@ -65,9 +65,24 @@ function icono_archivo($tipo)
 	return $salida;
 }
 
+/**
+ * Ésta función elimina las barras dobles
+ * @param string $string Texto a limpiar
+ * @return string
+ */
 function limpiarRuta($string)
 {
 	return preg_replace('#/+#', '/', $string);
+}
+
+/**
+ * Ésta función acorta un string para que no sobrepase el tamaño de su contenedor html
+ * @param string $string Texto a acortar
+ * @return string
+ */
+function texto_limitado($string, $largo = 18)
+{
+	return mb_strimwidth($string, 0, $largo, '...');
 }
 
 
@@ -88,5 +103,19 @@ spl_autoload_register(function ($clase) {
 
    
 });
+
+/**
+ * Función extraída de internet, obtiene el tamaño (peso) de una carpeta incluida subcarpetas..
+ */
+function folderSize($dir)
+{
+	$size = 0;
+
+	foreach (glob(rtrim($dir, '/') . '/*', GLOB_NOSORT) as $each) {
+		$size += is_file($each) ? filesize($each) : folderSize($each);
+	}
+
+	return $size;
+}
 
 ?>

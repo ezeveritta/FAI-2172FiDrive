@@ -85,6 +85,82 @@ class ContenidoControl
     }
 
     /**
+     * Esta función reordena el contenido de una carpeta segun los parámetros indicados
+     * @param array $contenido Arreglo de carpetas y archivos a ordenar
+     * @param string $orden Si se ordena por orden alfabetico, por tamaño o fecha
+     * @param string $direccion Si se ordena valores ascendentes o descendentes
+     * 
+     * @return array
+     */
+    public function ordenarContenido($ruta, $contenido, $orden = 'nombre', $direccion = 'descendente')
+    {
+        if ($contenido == null)
+        {
+            $this->set_error('No hay contenido.');
+            return false;
+        }
+
+        switch ($orden) 
+        {
+            case 'nombre':
+                if ($direccion == 'ascendente')
+                {
+                    rsort($contenido['carpetas']);
+                    rsort($contenido['archivos']);
+                } 
+                elseif ($direccion == 'descendente')
+                {
+                    sort($contenido['carpetas']);
+                    sort($contenido['archivos']);
+                }
+            break;
+
+            case 'tamaño':
+                $temp_carpetas = array();
+                $temp_archivos = array();
+
+                // Por cada CARPETA en $contenido, obtengo su peso y lo guardo en el arreglo temporal
+                foreach ($contenido['carpetas'] as $nombre) {
+                    $path = "$ruta/$nombre";
+                    $tamaño = folderSize('../../../' . $path);
+                    array_push($temp_carpetas, ['nombre' => $nombre, 'tamaño' => $tamaño]);
+                }
+
+                // Por cada ARCHIVO en $contenido, obtengo su peso y lo guardo en el arreglo temporal
+                foreach ($contenido['archivos'] as $nombre) {
+                    $path = "$ruta/$nombre";
+                    $tamaño = filesize('../../../' . $path);
+                    array_push($temp_archivos, ['nombre' => $nombre, 'tamaño' => $tamaño]);
+                }
+                
+                // Ordenamos
+                if ($direccion == 'descendente') {
+                    array_multisort(array_column($temp_carpetas,"tamaño"), SORT_DESC, $temp_carpetas);
+                    array_multisort(array_column($temp_archivos,"tamaño"), SORT_DESC, $temp_archivos);
+                }
+                else if ($direccion == 'ascendente') {
+                    array_multisort(array_column($temp_carpetas,"tamaño"), SORT_ASC, $temp_carpetas);
+                    array_multisort(array_column($temp_archivos,"tamaño"), SORT_ASC, $temp_archivos);
+                }
+
+                // retornamos el arreglo $contenido con el nuevo orden
+                $contenido['carpetas'] = array();
+                $contenido['archivos'] = array();
+                foreach ($temp_carpetas as $carpeta)
+                {
+                    array_push($contenido['carpetas'], $carpeta['nombre']);
+                }
+                foreach ($temp_archivos as $archivo)
+                {
+                    array_push($contenido['archivos'], $archivo['nombre']);
+                }
+            break;
+        }
+
+        return $contenido;
+    }
+
+    /**
      * Éste método retorna un string HTML correspondiente a la navegación de carpetas
      * @param array $ruta
      * @return string
@@ -93,9 +169,6 @@ class ContenidoControl
     {
         // Divido las rutas en un array
         $arregloDirecciones = explode('/', $ruta);
-
-        // elimino los valores "" (sin contenido..)
-        //while(end($arregloDirecciones) == "") {array_pop($exp); }
 
         // Por cada item, creo su elemento html
         $HTML = '<style>.icono-direcciones{color: #888;}</style>';
@@ -149,7 +222,7 @@ class ContenidoControl
                                 </div>
                             </div>
                         <div class="h1 h-75 icono"><i class="fa fa-folder"></i></div>
-                        <div>' . $nombre . '</div></li>';
+                        <div class="titulo">' . texto_limitado($nombre) . '</div></li>';
 
         return $HTML;
     }
@@ -168,8 +241,8 @@ class ContenidoControl
         $extension = pathinfo("$ruta/$nombre")["extension"];
         $tipoArchivo = tipo_archivo($extension);
 
-        // Escribimos el HTML
-        $HTML .= '<li class="list-group-item border m-2 custom-folder custom-item bg-light">';
+        // Escribimos el HTML// custom-folder
+        $HTML .= '<li class="list-group-item border m-2 custom-item bg-light archivo">';
 
         $HTML .= '<div class="dropdown opciones" style="right: -5px; top: 3px; position: absolute; display: none;">
                             <button type="button" class="float-right btn bg-transparent" id="item_' . $id . '_opciones" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -217,7 +290,7 @@ class ContenidoControl
         ? '<div class="h-75 mb-2"><img src="../../../' . $ruta . '/' . $nombre . '"></img></div>'
         : '<div class="h1 h-75 icono"><i class="fa fa-' . icono_archivo($tipoArchivo) . '"></i></div>';
 
-        $HTML .=    '<div class="w-100" >' . $nombre . '</div></li>';
+        $HTML .=    '<div class="w-100 titulo" >' . texto_limitado($nombre) . '</div></li>';
 
         return $HTML;
     }
