@@ -98,22 +98,126 @@ class ContenidoControl
         //while(end($arregloDirecciones) == "") {array_pop($exp); }
 
         // Por cada item, creo su elemento html
-        $HTML = '';
-        foreach ($arregloDirecciones as $indice => $nombreDirectorio)
-        {
+        $HTML = '<style>.icono-direcciones{color: #888;}</style>';
+        foreach ($arregloDirecciones as $indice => $nombreDirectorio) {
             // Omito los directorios sin nombre (doble barra)
-            if ($nombreDirectorio != '')
-            {
-                $HTML .= '<i class="fa fa-chevron-right px-2"></i>
+            if ($nombreDirectorio != '') {
+                $HTML .= '<i class="fa fa-chevron-right px-2 icono-direcciones"></i>
                           <a href="./index.php?carpeta=';
                 // Valor de href
-                for ($f=0; $f <= $indice; $f++)
-                {
+                for ($f = 0; $f <= $indice; $f++) {
                     $HTML .=  "{$arregloDirecciones[$f]}/";
                 }
-                $HTML .=  '" class="text-muted">'."$nombreDirectorio</a>";
+                $HTML .=  '" style="color: #555">' . "$nombreDirectorio</a>";
             }
         }
+
+        return $HTML;
+    }
+
+    /**
+     * Éste método retorna un string HTML correspondiente a una carpeta
+     * @param array $ruta
+     * @return string
+     */
+    public static function html_carpeta($id, $ruta, $nombre)
+    {
+        $HTML   =   '<li class="list-group-item border m-2 custom-folder bg-light folder custom-item">
+                        <div class="opciones dropdown" style="right: -5px; top: 3px; position: absolute; display: none;">
+                                <button type="button" class="float-right btn bg-transparent" id="item_' . $id . '_opciones" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-ellipsis-v"></i>
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="item_' . $id . '_opciones">
+                                    <div class="dropdown-item abrir">
+                                        <a href="./index.php?carpeta=' . $ruta . '/' . $nombre . '&accion=abrirCarpeta" class="text-dark btn-abrir">
+                                            <i class="fa fa-folder-open text-muted"></i>
+                                            Abrir
+                                        </a>
+                                    </div>
+                                    <div class="dropdown-item">
+                                        <a href="../compartirarchivo/index.php?archivo=' . $ruta . '/' . $nombre . '" class="text-dark">
+                                            <i class="fa fa-link text-muted"></i>
+                                            Compartir
+                                        </a>
+                                    </div>
+                                    <div class="dropdown-item">
+                                        <a href="../eliminararchivo/index.php?archivo=' . $ruta . '/' . $nombre . '" class="text-danger">
+                                            <i class="fa fa-trash-alt"></i>
+                                            Eliminar
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        <div class="h1 h-75 icono"><i class="fa fa-folder"></i></div>
+                        <div>' . $nombre . '</div></li>';
+
+        return $HTML;
+    }
+
+
+    /**
+     * Éste método retorna un string HTML correspondiente a una archivo
+     * @param array $ruta
+     * @return string
+     */
+    public static function html_archivo($id, $ruta, $nombre)
+    {
+        $HTML = '';
+
+        // Obtenemos el tipo de archivo para mostrar el icono que le corresponde
+        $extension = pathinfo("$ruta/$nombre")["extension"];
+        $tipoArchivo = tipo_archivo($extension);
+
+        // Escribimos el HTML
+        $HTML .= '<li class="list-group-item border m-2 custom-folder custom-item bg-light">';
+
+        $HTML .= '<div class="dropdown opciones" style="right: -5px; top: 3px; position: absolute; display: none;">
+                            <button type="button" class="float-right btn bg-transparent" id="item_' . $id . '_opciones" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-ellipsis-v text-center w-100"></i>
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="item_' . $id . '_opciones">
+                                <div class="dropdown-item abrir">
+                                    <a href="../../../' . $ruta . '/' . $nombre . '" target="_blanck" class="btn bg-transparent btn-abrir">
+                                        <i class="fa fa-download text-muted"></i>
+                                        Descargar
+                                    </a>
+                                </div>
+                                <div class="dropdown-item">
+                                    <form action="../amarchivo/index.php" method="get">
+                                        <input type="hidden" name="archivo" value="' . $ruta . '/' . $nombre . '">
+                                        <button type="submit" class="btn bg-transparent">
+                                            <i class="fa fa-edit text-muted"></i>
+                                            Editar
+                                        </button>
+                                    </form>
+                                </div>
+                                <div class="dropdown-item">
+                                    <form action="../compartirarchivo/index.php" method="post">
+                                        <input type="hidden" name="archivo" value="' . $ruta . '/' . $nombre . '">
+                                        <button type="submit" class="btn bg-transparent">
+                                            <i class="fa fa-link text-muted"></i>
+                                            Compartir
+                                        </button>
+                                    </form>
+                                </div>
+                                <div class="dropdown-item">
+                                    <form action="../eliminararchivo/index.php" method="get">
+                                        <input type="hidden" name="archivo" value="' . $ruta . '/' . $nombre . '">
+                                        <button type="submit" class="btn bg-transparent text-danger">
+                                            <i class="fa fa-trash-alt"></i>
+                                            <span>Eliminar</span>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>';
+
+        // Si el archivo es una imagen, la mostramos en lugar de un icono
+        $HTML .= ($tipoArchivo == 'imagen')
+        ? '<div class="h-75 mb-2"><img src="../../../' . $ruta . '/' . $nombre . '"></img></div>'
+        : '<div class="h1 h-75 icono"><i class="fa fa-' . icono_archivo($tipoArchivo) . '"></i></div>';
+
+        $HTML .=    '<div class="w-100" >' . $nombre . '</div></li>';
 
         return $HTML;
     }

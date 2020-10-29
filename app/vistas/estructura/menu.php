@@ -1,19 +1,15 @@
-
 <!-- Contenido -->
-<div class="container-fluid h-100">
-    <div class="row h-100">
-      
-        <!-- Menú -->
-        <br><br><br>
-        <!-- d-none d-md-block -->
-        <nav class="col-md-2 col-xs-12 bg-light sidebar">
-          <div class="sidebar-sticky">
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <p class="text-center w-100">Este es el Menu</p>
-              </li>
-            </ul>
-          </div>
-        </nav>
+<div class="container-fluid mt-3" style="border-radius: 15px; border: 1px solid #ddd; width: calc(100% - 40px); height: calc(100% - 110px)!important;">
+  <div class="row" style="height: calc(100% - 35px)">
+    <!-- Menú -->
+    <nav class="col-md-2 col-xs-12 sidebar">
+      <div class="sidebar-sticky" style="border-right: 1px solid #ddd; margin: 15px -10px; height: 100%!important">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <p class="text-center text-muted w-100">Este es el Menu</p>
+          </li>
+        </ul>
+      </div>
+    </nav>
 
-        <!-- Cuerpo -->
+    <!-- Cuerpo -->
