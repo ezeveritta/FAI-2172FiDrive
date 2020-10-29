@@ -49,7 +49,7 @@
     <div class="navbar navbar-light bg-white flex-md-nowrap p-1 text-light" style="box-shadow: 3px 0px 8px rgba(0,0,0,0.1)">
         <div class="w-100 d-flex justify-content-between">
             <div class="">
-                <h5 class="ml-5 pt-2"><a href="index.php" class="text-muted" style="font-family: Satisfy">FiDrive</a></h5>
+                <h5 class="ml-5 pt-2"><a href="../contenido" class="text-muted" style="font-family: Satisfy">FiDrive</a></h5>
             </div>
             <div class="mr-3 pt-2">
                 <a href="https://github.com/ezeveritta/FAI-2172FiDrive" class="text-muted mr-3">GitHub</a>

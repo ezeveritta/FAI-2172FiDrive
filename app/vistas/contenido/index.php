@@ -21,6 +21,10 @@ $ruta = (isset($datos['carpeta'])) ? limpiarRuta($datos['carpeta']) : 'archivos'
 
 // Obtengo un array de contenido ["carpetas", "archivos"]
 $contenido = $control->abrirDirectorio($ruta);
+if ($contenido === false) {
+    header('Location: ./index.php?error=Directorio no encontrado.');
+    die();
+}
 
 //print_r($datos);
 // Reordeno el contenido
@@ -29,6 +33,7 @@ if (isset($datos['orden']) &&  isset($datos['direccion']))
 
 ?>
 
+<?php echo get_aviso($datos); ?>
 <!-- Contenido -->
 <div class="col-md-10 col-xs-12">
     <div class="row h-100">
@@ -45,106 +50,98 @@ if (isset($datos['orden']) &&  isset($datos['direccion']))
                     </div>
                 </div>
 
-                <nav class="navbar navbar-expand-lg">
+                <nav class="navbar navbar-expand-lg" style="margin-left: -10px">
+                    <ul class="navbar-nav" id="menuOpciones">
+                        <!-- Nueva Carpeta -->
+                        <li class="nav-item dropdown">
+                            <button type="button" class="btn btn-sm p-2" id="nuevaCarpeta" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="border-radius: 10px; background: #98b5c2; color: #fff">
+                                <i class="fa fa-folder-plus pl-4"></i>
+                                <span>carpeta</span>
+                                <i class="fa fa-sort-down" style="padding-left: 25px; transform: translateY(-2px);"></i>
+                            </button>
 
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent" style="margin-left: -10px;">
-                        <ul class="navbar-nav">
-
-                            <!-- Nueva Carpeta -->
-                            <li class="nav-item dropdown">
-                                <button type="button" class="btn btn-sm p-2" id="nuevaCarpeta" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="border-radius: 10px; background: #98b5c2; color: #fff">
-                                    <i class="fa fa-folder-plus pl-4"></i>
-                                    Nueva carpeta
-                                    <i class="fa fa-sort-down" style="padding-left: 25px; transform: translateY(-2px);"></i>
-                                </button>
-
-                                <div class="dropdown-menu mt-2" aria-labelledby="nuevaCarpeta" id="nuevaCarpetaDropdown" style="border-radius: 10px;">
-                                    <form action="accion.php" method="post" class="mt-1">
-                                        <div class="row px-2">
-                                            <div class="form-group col-sm-8">
-                                                <label for="nombre"><b>Nombre:</b></label>
-                                                <input type="text" class="form-control" id="nombre" name="nombre">
-                                            </div>
-                                            <input type="hidden" name="ruta" value="<?php echo $ruta ?>">
-                                            <input type="hidden" name="accion" value="crearCarpeta">
-                                            <div class="col-sm-4">
-                                                <label for=""></label>
-                                                <button type="submit" class="btn btn-block mt-2 w-100 pb-2" style="border-radius: 10px; background: #98b5c2; color: #fff; border: none;">Crear</button>
-                                            </div>
+                            <div class="dropdown-menu mt-2" aria-labelledby="nuevaCarpeta" id="nuevaCarpetaDropdown" style="border-radius: 10px;">
+                                <form action="accion.php" method="post" class="mt-1">
+                                    <div class="row px-2">
+                                        <div class="form-group col-sm-8">
+                                            <label for="nombre"><b>Nombre:</b></label>
+                                            <input type="text" class="form-control" id="nombre" name="nombre">
                                         </div>
-                                    </form>
-                                </div>
-                                <style>
-                                    #nuevaCarpetaDropdown form>div>div {
-                                        padding: 4px !important;
-                                    }
-
-                                    #nuevaCarpetaDropdown {
-                                        padding: 0px 15px !important;
-                                    }
-                                </style>
-                            </li>
-
-                            <!-- Cargar Archivo -->
-                            <li class="nav-item">
-                                <form action="../amarchivo/index.php" method="post">
-                                    <input type="hidden" name="ruta" value="<?php echo $ruta ?>">
-                                    <input type="hidden" name="clave" value="0">
-                                    <button type="submit" class="btn btn-sm ml-3 p-2" style="border-radius: 10px; background: #d4cea3; color: #fff">
-                                        <i class="fa fa-upload pl-4"></i>
-                                        <span style="padding-right: 6px; margin-left: -4px">Subir Archivo</span>
-                                    </button>
+                                        <input type="hidden" name="ruta" value="<?php echo $ruta ?>">
+                                        <input type="hidden" name="accion" value="crearCarpeta">
+                                        <div class="col-sm-4">
+                                            <label for=""></label>
+                                            <button type="submit" class="btn btn-block mt-2 w-100 pb-2" style="border-radius: 10px; background: #98b5c2; color: #fff; border: none;">Crear</button>
+                                        </div>
+                                    </div>
                                 </form>
-                            </li>
+                            </div>
+                            <style>
+                                #nuevaCarpetaDropdown form>div>div {
+                                    padding: 4px !important;
+                                }
 
-                            <!-- Ordenar -->
-                            <li class="nav-item dropdown ml-3">
-                                <button type="button" class="btn btn-sm p-2" id="ordenar" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="border-radius: 10px; background: white; border: 1px solid grey; color: #444">
-                                    <i class="fa fa-filter pl-4"></i>
-                                    Ordenar
-                                    <i class="fa fa-sort-down" style="padding-left: 25px; transform: translateY(-2px);"></i>
+                                #nuevaCarpetaDropdown {
+                                    padding: 0px 15px !important;
+                                }
+                            </style>
+                        </li>
+
+                        <!-- Cargar Archivo -->
+                        <li class="nav-item">
+                            <form action="../amarchivo/index.php" method="post">
+                                <input type="hidden" name="ruta" value="<?php echo $ruta ?>">
+                                <input type="hidden" name="clave" value="0">
+                                <button type="submit" class="btn btn-sm ml-3 p-2" style="border-radius: 10px; background: #d4cea3; color: #fff">
+                                    <i class="fa fa-upload pl-4"></i>
+                                    <span style="padding-right: 6px; margin-left: -4px">Subir Archivo</span>
                                 </button>
+                            </form>
+                        </li>
 
-                                <div class="dropdown-menu mt-2" aria-labelledby="ordenar" id="ordenarDropdown" style="border-radius: 10px;">
-                                    <a href="./index.php?carpeta=<?php echo $ruta; ?>&orden=nombre&direccion=descendente">
-                                        <i class="fa fa-sort-alpha-down ml-2"></i>
-                                        Nombre
-                                    </a>
-                                    <a href="./index.php?carpeta=<?php echo $ruta; ?>&orden=nombre&direccion=ascendente">
-                                        <i class="fa fa-sort-alpha-down-alt ml-2"></i>
-                                        Nombre
-                                    </a>
-                                    <a href="./index.php?carpeta=<?php echo $ruta; ?>&orden=tamaño&direccion=descendente">
-                                        <i class="fa fa-sort-amount-up ml-2"></i>
-                                        Tamaño
-                                    </a>
-                                    <a href="./index.php?carpeta=<?php echo $ruta; ?>&orden=tamaño&direccion=ascendente">
-                                        <i class="fa fa-sort-amount-down-alt ml-2"></i>
-                                        Tamaño
-                                    </a>
-                                </div>
-                                <style>
-                                    #ordenarDropdown form>div>div {
-                                        padding: 4px !important;
-                                    }
+                        <!-- Ordenar -->
+                        <li class="nav-item dropdown ml-3">
+                            <button type="button" class="btn btn-sm p-2" id="ordenar" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="border-radius: 10px; background: white; border: 1px solid grey; color: #444">
+                                <i class="fa fa-filter pl-4"></i>
+                                <span>Ordenar</span>
+                                <i class="fa fa-sort-down" style="padding-left: 25px; transform: translateY(-2px);"></i>
+                            </button>
 
-                                    #ordenarDropdown a {
-                                        display: block;
-                                        padding: 10px 5px;
-                                        color: grey;
-                                    }
+                            <div class="dropdown-menu mt-2" aria-labelledby="ordenar" id="ordenarDropdown" style="border-radius: 10px;">
+                                <a href="./index.php?carpeta=<?php echo $ruta; ?>&orden=nombre&direccion=descendente">
+                                    <i class="fa fa-sort-alpha-down ml-2"></i>
+                                    Nombre
+                                </a>
+                                <a href="./index.php?carpeta=<?php echo $ruta; ?>&orden=nombre&direccion=ascendente">
+                                    <i class="fa fa-sort-alpha-down-alt ml-2"></i>
+                                    Nombre
+                                </a>
+                                <a href="./index.php?carpeta=<?php echo $ruta; ?>&orden=tamaño&direccion=descendente">
+                                    <i class="fa fa-sort-amount-up ml-2"></i>
+                                    Tamaño
+                                </a>
+                                <a href="./index.php?carpeta=<?php echo $ruta; ?>&orden=tamaño&direccion=ascendente">
+                                    <i class="fa fa-sort-amount-down-alt ml-2"></i>
+                                    Tamaño
+                                </a>
+                            </div>
+                            <style>
+                                #ordenarDropdown form>div>div {
+                                    padding: 4px !important;
+                                }
 
-                                    #ordenarDropdown {
-                                        padding: 0px 15px !important;
-                                    }
-                                </style>
-                            </li>
-                        </ul>
-                    </div>
+                                #ordenarDropdown a {
+                                    display: block;
+                                    padding: 10px 5px;
+                                    color: grey;
+                                }
+
+                                #ordenarDropdown {
+                                    padding: 0px 15px !important;
+                                }
+                            </style>
+                        </li>
+                    </ul>
                 </nav>
 
 
@@ -152,7 +149,7 @@ if (isset($datos['orden']) &&  isset($datos['direccion']))
 
                     <?php
                     // Verifico si hay contenido en la carpeta
-                    if ($contenido === false) {
+                    if ($contenido === null) {
                         echo '<h4 class="text-muted w-100 text-center m-4">No hay contenido</h4>';
                     } else {
                         // Indice para los IDs
@@ -201,7 +198,8 @@ if (isset($datos['orden']) &&  isset($datos['direccion']))
                     }
 
                     .custom-item img {
-                        height: 100% !important;
+                        max-height: 100% !important;
+                        max-width: 100% !important;
                         border-radius: 5px;
                         transform: translateX(-5px);
                     }
@@ -232,8 +230,8 @@ if (isset($datos['orden']) &&  isset($datos['direccion']))
                     }
 
                     .custom-item.selected.archivo {
-                        border: 1px solid #cfc9bc !important;
-                        background: #ebebd1 !important;
+                        border: 1px solid #e0d6ca !important;
+                        background: #f2efe4 !important;
                     }
 
                     ul>* {
@@ -245,15 +243,19 @@ if (isset($datos['orden']) &&  isset($datos['direccion']))
                         padding-bottom: 0px;
                     }
 
-                    @media only screen and (max-width: 576px) {
-                        ul .custom-folder {
-                            width: 100%;
+                    @media (max-width: 470px) {
+                        ul .custom-item {
+                            width: 100% !important;
+                        }
+
+                        .custom-item .opciones {
+                            display: inline-block;
                         }
                     }
 
-                    @media only screen and (max-width: 768px) {
-                        ul .custom-folder {
-                            width: 31.111%;
+                    @media (max-width: 768px) {
+                        ul .custom-item {
+                            width: 46%;
                         }
                     }
                 </style>
@@ -262,10 +264,27 @@ if (isset($datos['orden']) &&  isset($datos['direccion']))
     </div>
 </div>
 
+
 <style>
     @media (max-width: 576px) {
         #contenedor {
             width: 100% !important;
+        }
+
+        #menuOpciones {
+            width: 100%;
+        }
+
+        #menuOpciones {
+            float: left;
+        }
+
+        #menuOpciones button span {
+            display: none;
+        }
+
+        #menuOpciones button .fa-sort-down {
+            display: none;
         }
     }
 </style>

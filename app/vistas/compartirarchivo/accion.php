@@ -30,5 +30,5 @@ if (!$control->cargar($datos))
 } 
 
 // Si se carga, regresamos a la vista contenido
-header( "Location: ../contenido/index.php?carpeta={$control->get_ruta()}" );
+header( "Location: ../contenido/index.php?carpeta={$control->get_ruta()}&exito={Operación completada.}" );
 die;

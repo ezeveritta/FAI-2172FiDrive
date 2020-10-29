@@ -2,7 +2,7 @@
     </div>
 
     <!-- Pie de Página -->
-    <footer class="footer fixed-bottom bg-white p-2">
+    <footer class="footer bg-white p-2">
       <div class="container text-center">
         <span class="text-muted">Este es el Pie</span>
       </div>
