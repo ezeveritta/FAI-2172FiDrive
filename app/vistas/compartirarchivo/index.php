@@ -2,11 +2,12 @@
 
 $Titulo = "Compartir Archivo";
 include_once("../estructura/cabecera.php");
-include_once("../../controladores/CompartirArchivoControl.php");
 include_once("../../modelos/BaseDatos.php");
 include_once("../../modelos/Usuario.php");
+include_once("../../modelos/EstadoTipos.php");
 include_once("../../modelos/ArchivoCargado.php");
 include_once("../../modelos/ArchivoCargadoEstado.php");
+include_once("../../controladores/CompartirArchivoControl.php");
 
 /**
  * Alumno: Ezequiel Vera
@@ -41,12 +42,12 @@ $contraseña = $info['contraseña'];
 $enlace = $info['enlace'];
 // cantidad días
 $date = new DateTime($info['fechaFin']);
-$vencimiento = $date->diff(new DateTime('now'))->format("%d");
+$vencimiento = ($info['fechaFin'] != '0000-00-00 00:00:00') ? $date->diff(new DateTime('now'))->format("%d") : '0';
+
+// Errores, alertas, exitos
+echo get_aviso($datos);
 
 ?>
-
-
-<?php echo get_aviso($datos); ?>
 <!-- Contenido -->
 <div class="col-md-10">
     <div class="row h-100">

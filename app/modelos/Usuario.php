@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 /**
  * Alumno: Ezequiel Vera
  * Legajo: FAI-2172
@@ -41,7 +42,7 @@ class Usuario
         $this->set_activo($activo);
     }
 
-     /**
+    /**
      * Función para buscar datos desde la base de datos según un id dado
      * @param int $id
      * 
@@ -50,35 +51,30 @@ class Usuario
     public function buscar($id)
     {
         $bd = new BaseDatos();
-		$query = "SELECT * from usuario where idusuario=" . $id;
+        $query = "SELECT * from usuario where idusuario=" . $id;
         $output = false;
-        
+
         // Inicio conexión con bd
-        if($bd->Iniciar())
-        {
+        if ($bd->Iniciar()) {
             // Ejecuto la consulta
-            if($bd->Ejecutar($query))
-            {
+            if ($bd->Ejecutar($query)) {
                 // Recupero la información
-                if($row2 = $bd->Registro())
-                {
-				    $this->set_id($id);
-					$this->set_nombre($row2['usnombre']);
-					$this->set_apellido($row2['usapellido']);
-					$this->set_login($row2['uslogin']);
-					$this->set_clave($row2['usclave']);
-					$this->set_activo($row2['usactivo']);
-					$output= true;
-				}	
-            } else
-            {
-		 		$this->set_error($bd->getError());
-			}
-        } else
-        {
-		 	$this->set_error($bd->getError());
-		}
-		return $output;
+                if ($row2 = $bd->Registro()) {
+                    $this->set_id($id);
+                    $this->set_nombre($row2['usnombre']);
+                    $this->set_apellido($row2['usapellido']);
+                    $this->set_login($row2['uslogin']);
+                    $this->set_clave($row2['usclave']);
+                    $this->set_activo($row2['usactivo']);
+                    $output = true;
+                }
+            } else {
+                $this->set_error($bd->getError());
+            }
+        } else {
+            $this->set_error($bd->getError());
+        }
+        return $output;
     }
 
     /**
@@ -89,49 +85,44 @@ class Usuario
      */
     public static function listar($where = "", $order = "idusuario")
     {
-	    $listaUsuarios = null;
+        $listaUsuarios = null;
         $query = "Select * from usuario";
-        
-		if ($where != "")
+
+        if ($where != "")
             $query = $query . ' where ' . $where;
-        
+
         $query .= " order by " . $order;
-    
+
         // Iniciamos conexión con bd
-		$bd = new BaseDatos();
-        if($bd->Iniciar())
-        {
+        $bd = new BaseDatos();
+        if ($bd->Iniciar()) {
             // Ejecutamos la consulta
-            if($bd->Ejecutar($query))
-            {				
-				$listaUsuarios = array();
-                while($row2 = $bd->Registro())
-                {
-				    $id = $row2['idusuario'];
-					$nombre = $row2['usnombre'];
-					$apellido = $row2['usapellido'];
-					$login = $row2['uslogin'];
-					$clave = $row2['usclave'];
-					$activo = $row2['usactivo'];
-                
+            if ($bd->Ejecutar($query)) {
+                $listaUsuarios = array();
+                while ($row2 = $bd->Registro()) {
+                    $id = $row2['idusuario'];
+                    $nombre = $row2['usnombre'];
+                    $apellido = $row2['usapellido'];
+                    $login = $row2['uslogin'];
+                    $clave = $row2['usclave'];
+                    $activo = $row2['usactivo'];
+
                     // Creamos el nuevo objeto Usuario con los datos obtenidos
                     $tmpUsuario = new Usuario();
                     $tmpUsuario->set_id($id);
-                    $tmpUsuario->cargar($nombre,$apellido,$login,$clave,$activo);
+                    $tmpUsuario->cargar($nombre, $apellido, $login, $clave, $activo);
                     // Agregamos al arreglo
-					array_push($listaUsuarios, $tmpUsuario);
-				}
-            } else
-            {
-		 		$listaUsuarios = $bd->getError();
-			}
-        } else
-        {
+                    array_push($listaUsuarios, $tmpUsuario);
+                }
+            } else {
+                $listaUsuarios = $bd->getError();
+            }
+        } else {
             $listaUsuarios = $bd->getError();
         }
 
-		return $listaUsuarios;
-	}	
+        return $listaUsuarios;
+    }
 
 
     /**
@@ -140,90 +131,79 @@ class Usuario
      */
     public function insertar()
     {
-		$bd     = new BaseDatos();
-		$output = false;
-		$query  = "INSERT INTO usuario(usnombre, usapellido, uslogin, usclave, usactivo) 
-				   VALUES ('".$this->get_nombre()."','".$this->get_apellido()."','".$this->get_login()."','".$this->get_clave()."','".$this->get_activo()."')";
-        
-        // Iniciamos conexión
-        if($bd->Iniciar())
-        {
-            // Ejecutamos consulta
-            if($id = $bd->Ejecutar($query))
-            {
-                $this->set_id($id);
-			    $output = true;
-            } else
-            {
-				$this->set_error($bd->getError());
-			}
+        $bd     = new BaseDatos();
+        $output = false;
+        $query  = "INSERT INTO usuario(usnombre, usapellido, uslogin, usclave, usactivo) 
+				   VALUES ('" . $this->get_nombre() . "','" . $this->get_apellido() . "','" . $this->get_login() . "','" . $this->get_clave() . "','" . $this->get_activo() . "')";
 
-        } else
-        {
-			$this->set_error($bd->getError());
+        // Iniciamos conexión
+        if ($bd->Iniciar()) {
+            // Ejecutamos consulta
+            if ($id = $bd->Ejecutar($query)) {
+                $this->set_id($id);
+                $output = true;
+            } else {
+                $this->set_error($bd->getError());
+            }
+        } else {
+            $this->set_error($bd->getError());
         }
-        
-		return $output;
+
+        return $output;
     }
 
     /**
      * Esta función modifica los datos de la bd según las variables instancias
      * @return boolean
      */
-    public function modificar(){
-	    $output = false; 
-	    $bd = new BaseDatos();
-		$query = "UPDATE usuario SET usnombre='".$this->get_nombre()."',usapellido='".$this->get_apellido()
-               ."',uslogin='".$this->get_login()."',usclave='". $this->get_clave()
-               ."',usactivo=". $this->get_activo()." WHERE idusuario=".$this->get_id();
+    public function modificar()
+    {
+        $output = false;
+        $bd = new BaseDatos();
+        $query = "UPDATE usuario SET usnombre='" . $this->get_nombre() . "',usapellido='" . $this->get_apellido()
+            . "',uslogin='" . $this->get_login() . "',usclave='" . $this->get_clave()
+            . "',usactivo=" . $this->get_activo() . " WHERE idusuario=" . $this->get_id();
 
         // Iniciamos conexión
-        if($bd->Iniciar())
-        {
+        if ($bd->Iniciar()) {
             // Ejecutamos consulta
-            if($bd->Ejecutar($query))
-            {
-			    $output = true;
-            } else
-            {
-				$this->set_error($bd->getError());
-			}
-        } else
-        {
-			$this->set_error($bd->getError());
+            if ($bd->Ejecutar($query)) {
+                $output = true;
+            } else {
+                $this->set_error($bd->getError());
+            }
+        } else {
+            $this->set_error($bd->getError());
         }
-        
-		return $output;
+
+        return $output;
     }
-    
+
     /**
      * Con ésta función eliminamos una tupla según la id.
      * @return boolean
      */
-    public function eliminar(){
-		$bd = new BaseDatos();
+    public function eliminar()
+    {
+        $bd = new BaseDatos();
         $output = false;
-        
+
         // Iniciamos conexión
-        if($bd->Iniciar())
-        {
-            $query = "DELETE FROM usuario WHERE idusuario=".$this->get_id();
+        if ($bd->Iniciar()) {
+            $query = "DELETE FROM usuario WHERE idusuario=" . $this->get_id();
 
             // Ejecutamos consulta
-            if($bd->Ejecutar($query))
-            {
+            if ($bd->Ejecutar($query)) {
                 $output = true;
-            } else
-            {
+            } else {
                 $this->set_error($bd->getError());
             }
-        } else
-        {
-			$this->set_error($bd->getError());
+        } else {
+            $this->set_error($bd->getError());
         }
-        
-		return $output; 
-	}
+
+        return $output;
+    }
 
 
     /**
@@ -248,11 +228,11 @@ class Usuario
     public function __toString()
     {
         return "<b>Objeto Usuario: </b>"
-             . "<br>id: " . $this->get_id()
-             . "<br>nombre: " . $this->get_nombre()
-             . "<br>apellido: " . $this->get_apellido()
-             . "<br>login: " . $this->get_login()
-             . "<br>clave: " . $this->get_clave()
-             . "<br>activo: " . $this->get_activo();
+            . "<br>id: " . $this->get_id()
+            . "<br>nombre: " . $this->get_nombre()
+            . "<br>apellido: " . $this->get_apellido()
+            . "<br>login: " . $this->get_login()
+            . "<br>clave: " . $this->get_clave()
+            . "<br>activo: " . $this->get_activo();
     }
 }

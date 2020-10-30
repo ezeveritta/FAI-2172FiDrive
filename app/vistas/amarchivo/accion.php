@@ -1,10 +1,11 @@
 <?php 
 
 include_once("../../../configuracion.php");
-include_once("../../controladores/AmarchivoControl.php");
 include_once('../../modelos/BaseDatos.php');
+include_once("../../modelos/EstadoTipos.php");
 include_once('../../modelos/ArchivoCargado.php');
 include_once('../../modelos/ArchivoCargadoEstado.php');
+include_once("../../controladores/AmarchivoControl.php");
 
 /**
  * Alumno: Ezequiel Vera

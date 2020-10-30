@@ -1,10 +1,11 @@
-<?php 
+<?php
 
-include_once("../../controladores/CompartirArchivoControl.php");
+include_once("../../../configuracion.php");
 include_once('../../modelos/BaseDatos.php');
+include_once("../../modelos/EstadoTipos.php");
 include_once('../../modelos/ArchivoCargado.php');
 include_once('../../modelos/ArchivoCargadoEstado.php');
-include_once("../../../configuracion.php");
+include_once("../../controladores/CompartirArchivoControl.php");
 
 /**
  * Alumno: Ezequiel Vera
@@ -30,5 +31,5 @@ if (!$control->cargar($datos))
 } 
 
 // Si se carga, regresamos a la vista contenido
-header( "Location: ../contenido/index.php?carpeta={$control->get_ruta()}&exito={Operación completada.}" );
+header( "Location: ../contenido/index.php?carpeta={$control->get_ruta()}&exito=Operación completada." );
 die;

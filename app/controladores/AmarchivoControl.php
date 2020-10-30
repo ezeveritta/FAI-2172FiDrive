@@ -29,21 +29,18 @@ class AmarchivoControl
     public function validar($datos, $archivo = false)
     {
         // Valido que existan valores
-        if (!isset($datos['nombre']) || !isset($datos['usuario']) || !isset($datos['descripcion']) || !isset($datos['icono']) || $archivo === null)
-        {
+        if (!isset($datos['nombre']) || !isset($datos['usuario']) || !isset($datos['descripcion']) || !isset($datos['icono']) || $archivo === null) {
             $this->set_error('Uno ó más datos no se cargaron correctamente.');
             return false;
         }
-        
-        // Valido que el campo nombre no esté vacío
-        if (strlen($datos['nombre']) == 0)
-        {
+
+        // Valido que el campo 'nombre' no esté vacío
+        if (strlen($datos['nombre']) == 0) {
             $this->set_error('El campo "nombre" no debe quedar vacío.');
             return false;
         }
 
-        if ($archivo != false)
-        {
+        if ($archivo != false) {
             // Valido la extensión del archivo
             $extension = pathinfo($archivo['name'], PATHINFO_EXTENSION);
             $extensiones_permitidas = array(
@@ -59,12 +56,12 @@ class AmarchivoControl
                 return false;
             }
         }
-        
+
         // Validación correcta
         $this->set_error('');
         return true;
     }
-    
+
     /**
      * Esta función carga los datos al servidor y copia el archivo
      * @param string $datos Tiene todos los datos a subir a la bd
@@ -76,11 +73,10 @@ class AmarchivoControl
     {
         // Creamos el obj modelo y seteamos los datos
         $ArchivoCargado = new ArchivoCargado();
-        $ArchivoCargado->cargar($datos["nombre"], $datos["descripcion"], $datos["icono"], $datos["ruta"].'/'.$datos["nombre"], '0', '0', '', '', '', $datos["usuario"]);
+        $ArchivoCargado->cargar($datos["nombre"], $datos["descripcion"], $datos["icono"], $datos["ruta"] . '/' . $datos["nombre"], '0', '0', '', '', '', $datos["usuario"]);
 
         // Cargamos los datos a la tabla archivocargado
-        if (!$ArchivoCargado->insertar())
-        {
+        if (!$ArchivoCargado->insertar()) {
             $this->set_error($ArchivoCargado->get_error());
             return false;
         }
@@ -90,17 +86,15 @@ class AmarchivoControl
         $ArchivoCargadoEstado->cargar('Archivo recien cargado, aún no compartido.', '', '', '1', '1', $ArchivoCargado->get_id());
 
         // Cargamos los datos a la tabla archivocargadoestado
-        if (!$ArchivoCargadoEstado->insertar())
-        {
+        if (!$ArchivoCargadoEstado->insertar()) {
             $ArchivoCargado->eliminar(); // eliminamos lo cargado previamente
             $this->set_error($ArchivoCargadoEstado->get_error());
             return false;
         }
-        
+
         // Copiamos el archivo y cargamos info
         $ruta_archivo = "../../../{$datos['ruta']}/{$datos['nombre']}";
-        if (!copy($archivo['tmp_name'], $ruta_archivo))
-        {
+        if (!copy($archivo['tmp_name'], $ruta_archivo)) {
             $ArchivoCargado->eliminar();       // eliminamos lo cargado previamente
             $ArchivoCargadoEstado->eliminar(); // .
             $this->set_error('No se pudo copiar el archivo al servidor.');
@@ -122,12 +116,11 @@ class AmarchivoControl
      */
     public function modificar($datos)
     {
-        // Cargamos info a la base de datos
+        // Modelos a usar
         $ArchivoCargado = new ArchivoCargado();
-        
+
         // Buscamos la tupla en la BD
-        if (!$ArchivoCargado->buscar($datos['id']))
-        {
+        if (!$ArchivoCargado->buscar($datos['id'])) {
             $this->set_error('No se encontró registro para modificar.');
             return false;
         }
@@ -142,8 +135,7 @@ class AmarchivoControl
         $ArchivoCargado->set_linkAcceso($linkNuevo);
 
         // Modificamos el archivo local
-        if (!rename('../../../' . $linkViejo, '../../../' . $linkNuevo))
-        {
+        if (!rename('../../../' . $linkViejo, '../../../' . $linkNuevo)) {
             $this->set_error('No se pudo modificar el archivo en el servidor.');
             return false;
         }
@@ -151,6 +143,7 @@ class AmarchivoControl
         // Modificamos la BD
         if (!$ArchivoCargado->modificar()) {
             $this->set_error('No se pudo modificar la Base de Datos.');
+            rename('../../../' . $linkNuevo, '../../../' . $linkViejo);
             return false;
         }
 
@@ -161,7 +154,7 @@ class AmarchivoControl
     }
 
     /**
-     * Esta función retorna la información obtenida de las tablas "archivocargado" segun la id ó el linkacceso
+     * Esta función retorna la información obtenida de las tablas "archivocargado" segun 'id' ó 'linkacceso'
      * @param mixed $datos [clave, ruta o id]
      * 
      * @return array 
@@ -189,16 +182,16 @@ class AmarchivoControl
             return $arreglo;
         }
 
-        // Si está el parámetro 'clave' y 'ruta'
+        // Si está el parámetro 'clave' y 'ruta' (venimos de 'contenido')
         if (isset($datos['clave'])) {
             if (isset($datos['ruta']))
                 $arreglo['ruta'] = $datos['ruta'];
             return $arreglo;
         }
-        
+
         // SI busco por ID
         if (isset($datos['id'])) {
-            // Busco registro en la tabla archivocargadoestado
+            // Busco registro en la tabla 'archivocargadoestado'
             if (!$ArchivoCargado->buscar($datos['id'])) {
                 $this->set_error("No se encontró un registro con la id: {$datos['id']}");
                 return $arreglo;
@@ -213,7 +206,7 @@ class AmarchivoControl
                 return $arreglo;
             }
         }
-        
+
         $arreglo['nombre'] = $ArchivoCargado->get_nombre();
         $arreglo['usuario'] = $ArchivoCargado->get_usuario()->get_id();
         $arreglo['descripcion'] = $ArchivoCargado->get_descripcion();
@@ -221,7 +214,7 @@ class AmarchivoControl
         $arreglo['clave'] = 1;
         $arreglo['ruta'] = $ArchivoCargado->get_linkAcceso();
         $arreglo['id'] = $ArchivoCargado->get_id();
-        
+
         return $arreglo;
     }
 
@@ -230,13 +223,13 @@ class AmarchivoControl
     /**
      * Métodos de acceso
      */
-    public function set_error ($data) { $this->error = $data; }
-    public function set_archivoCargado ($data) { $this->archivoCargado = $data; }
-    public function set_archivoCargadoEstado ($data) { $this->archivoCargadoEstado = $data; }
-    public function get_error () { return $this->error; }
-    public function get_archivoCargado () { return $this->archivoCargado; }
-    public function get_archivoCargadoEstado () { return $this->archivoCargadoEstado; }
-    public function __toString() 
+    public function set_error($data) { $this->error = $data; }
+    public function set_archivoCargado($data) { $this->archivoCargado = $data; }
+    public function set_archivoCargadoEstado($data) { $this->archivoCargadoEstado = $data; }
+    public function get_error() { return $this->error; }
+    public function get_archivoCargado() { return $this->archivoCargado; }
+    public function get_archivoCargadoEstado() { return $this->archivoCargadoEstado; }
+    public function __toString()
     {
         return  "Objeto AmarchivoControl:
                  <br> Error: $this->get_error()

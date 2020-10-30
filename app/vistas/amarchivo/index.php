@@ -3,6 +3,8 @@
 $Titulo = "Alta-Mod Archivo";
 include_once("../estructura/cabecera.php");
 include_once("../../modelos/BaseDatos.php");
+include_once("../../modelos/EstadoTipos.php");
+include_once("../../modelos/Usuario.php");
 include_once("../../modelos/ArchivoCargado.php");
 include_once("../../modelos/ArchivoCargadoEstado.php");
 include_once("../../controladores/AmarchivoControl.php");
@@ -31,8 +33,9 @@ $icono = $info['icono'];
 $clave = $info['clave'];
 $id = $info['id'];
 
+// Errores, alertas, exitos
+echo get_aviso($datos);
 ?>
-<?php echo get_aviso($datos); ?>
 <!-- Contenido -->
 <div class="col-md-10 col-xs-12">
     <div class="row h-100">
@@ -41,11 +44,10 @@ $id = $info['id'];
             <div class="card card-block w-75 mx-auto" id="contenedor">
                 <form id="form_amarchivo" class="form w-100" action="accion.php" method="post" enctype="multipart/form-data" data-toggle="validator">
                     <div class="row p-3">
-                        <h5 class="mt-3 text-center w-100">Alta - Modificación de Archivo</h5>
-
                         <?php
                         if ($clave == 0) {
                         ?>
+                            <h5 class="mt-3 text-center w-100">Alta de Archivo</h5>
                             <div class="form-group col-sm-12">
                                 <h6><label class="" for="archivo">Selecciona un archivo</label></h6>
                                 <div class="custom-file">
@@ -55,8 +57,10 @@ $id = $info['id'];
                                 </div>
                             </div>
                         <?php
-                        }
+                        } else {
                         ?>
+                        <h5 class="mt-3 text-center w-100">Modificación de Archivo</h5>
+                        <?php } ?>
 
                         <div class="form-group col-sm-8">
                             <h6><label class="" for="nombre">Nombre de Archivo</label></h6>
@@ -168,18 +172,22 @@ $id = $info['id'];
             if (ext == "jpg" || ext == "png" || ext == "jpeg" || ext == "gif" || ext == "svg" || ext == "webp" || ext == "bpm" || ext == "tiff") {
                 $('#icono_imagen').prop('checked', true);
             } else
+
                 // Documento
                 if (ext == "doc" || ext == "docx" || ext == "odt" || ext == "rtf" || ext == "txt" || ext == "docm" || ext == "dot" || ext == "dotx" || ext == "dotm") {
                     $('#icono_doc').prop('checked', true);
                 } else
+
                     // PDF
                     if (ext == "pdf") {
                         $('#icono_pdf').prop('checked', true);
                     } else
+
                         // XLS
                         if (ext == "xls" || ext == "xlsx" || ext == "xlsm" || ext == "xltx" || ext == "xlt" || ext == "ods") {
                             $('#icono_xls').prop('checked', true);
                         } else
+
                             // ZIP
                             if (ext == "zip" || ext == "rar" || ext == "7z" || ext == "tar" || ext == "hz" || ext == "bin") {
                                 $('#icono_zip').prop('checked', true);

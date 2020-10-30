@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Alumno: Ezequiel Vera
  * Legajo: FAI-2172
@@ -23,68 +24,66 @@ class ContenidoControl
     public function crearCarpeta($datos)
     {
         // Validamos la información
-        if (!isset($datos['nombre']) || !isset($datos['ruta']))
-        {
+        if (!isset($datos['nombre']) || !isset($datos['ruta'])) {
             $this->set_error("No se especificó un nombre.");
             return false;
         }
 
         // Validamos el nombre de la carpeta
-        if (strpbrk($datos['nombre'], "\\/?%*:|\"<>"))
-        {
+        if (strpbrk($datos['nombre'], "\\/?%*:|\"<>")) {
             $this->set_error("Nombre contiene caracteres no admitidos.");
             return false;
         }
 
         // Definimos la ruta a crear
         $ruta = "../../../{$datos['ruta']}/{$datos['nombre']}";
-        
+
         // Creamos la carpeta
-        if (!mkdir($ruta, 0777))
-        {
+        if (!mkdir($ruta, 0777)) {
             $this->set_error("Error al crear carpeta.");
             return false;
         }
-        
+
         // Operación exitosa
         $this->set_error('');
         return true;
     }
 
     /**
-     * Esta función obtiene todas las carpetas y archivos de una carpeta
+     * Esta función obtiene todo el contenido de una carpeta
      * @param array $datos Contiene la información de la carpeta actual
      * 
      * @return mixed bool|null|array
      */
-    public static function abrirDirectorio($ruta)
+    public function abrirDirectorio($ruta)
     {
         $respuesta = null;
         $ruta = '../../../' . $ruta;
 
+        // Abro el directorio
         $direccion = opendir($ruta);
-        
+
         // Si no se encuentra directorio
-        if ($direccion === false)
-        {
+        if ($direccion === false) {
+            $this->set_error("Error al abrir la carpeta.");
             return false;
         }
 
+        // Obtengo el listado de carpetas y archivos
         $archivos = array();
         $carpetas = array();
 
-        // Obtener listado de carpetas y archivos
         while (($temp = readdir($direccion)) !== false) {
-            if ($temp !== "." && $temp !== ".." && !is_dir($ruta . '/' . $temp))
+            if ($temp !== "." && $temp !== ".." && !is_dir($ruta . '/' . $temp))    // Si es archivo
                 array_push($archivos, $temp);
-            if ($temp !== "." && $temp !== ".." && is_dir($ruta . '/' . $temp))
+            if ($temp !== "." && $temp !== ".." && is_dir($ruta . '/' . $temp))     // Si es carpeta
                 array_push($carpetas, $temp);
         }
 
         // Verifico si la carpeta está vacía o tiene contenido
         if (count($archivos) > 0 || count($carpetas) > 0) {
             $respuesta = ["carpetas" => $carpetas, "archivos" => $archivos];
-        } 
+        }
 
         return $respuesta;
     }
@@ -99,26 +98,21 @@ class ContenidoControl
      */
     public function ordenarContenido($ruta, $contenido, $orden = 'nombre', $direccion = 'descendente')
     {
-        if ($contenido == null)
-        {
+        if ($contenido == null) {
             $this->set_error('No hay contenido.');
             return false;
         }
 
-        switch ($orden) 
-        {
+        switch ($orden) {
             case 'nombre':
-                if ($direccion == 'ascendente')
-                {
+                if ($direccion == 'ascendente') {
                     rsort($contenido['carpetas']);
                     rsort($contenido['archivos']);
-                } 
-                elseif ($direccion == 'descendente')
-                {
+                } elseif ($direccion == 'descendente') {
                     sort($contenido['carpetas']);
                     sort($contenido['archivos']);
                 }
-            break;
+                break;
 
             case 'tamaño':
                 $temp_carpetas = array();
@@ -137,37 +131,34 @@ class ContenidoControl
                     $tamaño = filesize('../../../' . $path);
                     array_push($temp_archivos, ['nombre' => $nombre, 'tamaño' => $tamaño]);
                 }
-                
+
                 // Ordenamos
                 if ($direccion == 'descendente') {
-                    array_multisort(array_column($temp_carpetas,"tamaño"), SORT_DESC, $temp_carpetas);
-                    array_multisort(array_column($temp_archivos,"tamaño"), SORT_DESC, $temp_archivos);
-                }
-                else if ($direccion == 'ascendente') {
-                    array_multisort(array_column($temp_carpetas,"tamaño"), SORT_ASC, $temp_carpetas);
-                    array_multisort(array_column($temp_archivos,"tamaño"), SORT_ASC, $temp_archivos);
+                    array_multisort(array_column($temp_carpetas, "tamaño"), SORT_DESC, $temp_carpetas);
+                    array_multisort(array_column($temp_archivos, "tamaño"), SORT_DESC, $temp_archivos);
+                } else if ($direccion == 'ascendente') {
+                    array_multisort(array_column($temp_carpetas, "tamaño"), SORT_ASC, $temp_carpetas);
+                    array_multisort(array_column($temp_archivos, "tamaño"), SORT_ASC, $temp_archivos);
                 }
 
                 // retornamos el arreglo $contenido con el nuevo orden
                 $contenido['carpetas'] = array();
                 $contenido['archivos'] = array();
-                foreach ($temp_carpetas as $carpeta)
-                {
+                foreach ($temp_carpetas as $carpeta) {
                     array_push($contenido['carpetas'], $carpeta['nombre']);
                 }
-                foreach ($temp_archivos as $archivo)
-                {
+                foreach ($temp_archivos as $archivo) {
                     array_push($contenido['archivos'], $archivo['nombre']);
                 }
-            break;
+                break;
         }
 
         return $contenido;
     }
 
     /**
-     * Éste método retorna un string HTML correspondiente a la navegación de carpetas
-     * @param array $ruta
+     * Éste método retorna un string HTML correspondiente al navbar de carpetas
+     * @param string $ruta
      * @return string
      */
     public static function html_navegacion($ruta)
@@ -292,8 +283,8 @@ class ContenidoControl
 
         // Si el archivo es una imagen, la mostramos en lugar de un icono
         $HTML .= ($tipoArchivo == 'imagen')
-        ? '<div class="h-75 mb-2"><img src="../../../' . $ruta . '/' . $nombre . '"></img></div>'
-        : '<div class="h1 h-75 icono"><i class="fa fa-' . icono_archivo($tipoArchivo) . '"></i></div>';
+            ? '<div class="h-75 mb-2"><img src="../../../' . $ruta . '/' . $nombre . '"></img></div>'
+            : '<div class="h1 h-75 icono"><i class="fa fa-' . icono_archivo($tipoArchivo) . '"></i></div>';
 
         $HTML .=    '<div class="w-100 titulo" >' . texto_limitado($nombre) . '</div></li>';
 

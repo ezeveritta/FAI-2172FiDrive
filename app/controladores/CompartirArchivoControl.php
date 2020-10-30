@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Alumno: Ezequiel Vera
  * Legajo: FAI-2172
@@ -55,37 +56,37 @@ class CompartirArchivoControl
         $fechaFin    = new DateTime();
         $fechaFin->add(new DateInterval("P{$vencimiento}D"));
 
-        // Variables de este método
+        // Modelos a utilizar
         $ArchivoCargado = new ArchivoCargado();
         $ArchivoCargadoEstado = new ArchivoCargadoEstado();
 
-        // Buscamos el archivocargado y archivocargadoestado que queremos modificar
+        // Buscamos el 'archivocargado' y 'archivocargadoestado' que queremos modificar
         $ArchivoCargadoEstado->buscar($idArchivoCargadoEstado);
         $ArchivoCargado = $ArchivoCargadoEstado->get_archivoCargado();
 
-        // Guardo temporalmente para en caso de un error poder restablecer la información
+        // Guardo temporalmente para que en caso de un error, poder restablecer la información
         $respaldo_ArchivoCargado = $ArchivoCargado;
 
-        // Completamos la información de la tabla archivocargado
+        // Actualizamos la información del modelo ArchivoCargado
         $ArchivoCargado->set_cantidadDescarga($limite);
         $ArchivoCargado->set_fechaInicioCompartir($fechaInicio->format("Y-m-d H:i:s"));
         $ArchivoCargado->set_fechaFinCompartir($fechaFin->format("Y-m-d H:i:s"));
         $ArchivoCargado->set_protegidoClave($contraseña);
 
-        // Actualizamos archivocargado
+        // Actualizamos la BD
         if (!$ArchivoCargado->modificar())
         {
             $this->set_error( $ArchivoCargado->get_error() );
             return false;
         }
 
-        // Completamos la información de la tabla archivocargadoestado
+        // Actualizamos la información del modelo ArchivoCargadoEstado
         $ArchivoCargadoEstado->set_usuario($usuario);
         $ArchivoCargadoEstado->set_estadoTipos("2");
         $ArchivoCargadoEstado->set_descripcion("Archivo compartiendo");
         $ArchivoCargadoEstado->set_fechaIngreso($fechaInicio->format("Y-m-d H:i:s"));
 
-        // Actualizamos archivocargadoestado
+        // Actualizamos la tabla 'archivocargadoestado'
          if (!$ArchivoCargadoEstado->modificar())
         {
             $respaldo_ArchivoCargado->modificar();  // Reestablesco los valores originales

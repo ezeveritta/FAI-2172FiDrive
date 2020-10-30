@@ -26,7 +26,6 @@ if ($contenido === false) {
     die();
 }
 
-//print_r($datos);
 // Reordeno el contenido
 if (isset($datos['orden']) &&  isset($datos['direccion']))
     $contenido = $control->ordenarContenido($ruta, $contenido, $datos['orden'], $datos['direccion']);

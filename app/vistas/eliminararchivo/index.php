@@ -1,8 +1,9 @@
-<?php 
+<?php
 
-$Titulo = "Alta-Mod Archivo"; 
+$Titulo = "Alta-Mod Archivo";
 include_once("../estructura/cabecera.php");
 include_once('../../modelos/BaseDatos.php');
+include_once('../../modelos/EstadoTipos.php');
 include_once("../../modelos/Usuario.php");
 include_once('../../modelos/ArchivoCargado.php');
 include_once('../../modelos/ArchivoCargadoEstado.php');
@@ -18,8 +19,7 @@ $control = new EliminarArchivoControl();
 $datos = data_submitted();
 
 // Si no hay identificador del archivo, vuelvo a la vista "contenido"
-if (!isset($datos['id']) && !isset($datos['archivo']))
-{
+if (!isset($datos['id']) && !isset($datos['archivo'])) {
     header("Location: ../contenido/index.php?error=Se esperaba un identificador.");
     die;
 }
@@ -28,24 +28,25 @@ if (!isset($datos['id']) && !isset($datos['archivo']))
 $info = $control->get_info($datos);
 
 // Verifico que se encontró un registro en la BD
-if ($info == null)
-{
-    echo "..";
-    //header("Location: ../contenido/index.php?error={$control->get_error()}");
+if ($info == null) {
+    header("Location: ../contenido/index.php?error={$control->get_error()}");
     die;
 }
 
 // Defino variables para mayor comodidad
-$idArchivoCargado = $info['idArchivoCargado'];
+$idArchivoCargado       = $info['idArchivoCargado'];
 $idArchivoCargadoEstado = $info['idArchivoCargadoEstado'];
 $archivo = $info['archivo'];
-$nombre = $info['nombre'];
+$nombre  = $info['nombre'];
+
+// Errores, alertas, exitos
+echo get_aviso($datos);
 ?>
 <!-- Contenido -->
 <div class="col-md-10">
     <div class="row h-100">
         <div class="col-sm-12 my-5">
-            
+
             <div class="card card-block w-75 mx-auto" id="contenedor">
                 <form name="eliminarArchivo" id="eliminarArchivo" class="form w-100" action="accion.php" method="post" data-toggle="validator">
                     <div class="row p-4">
@@ -53,7 +54,7 @@ $nombre = $info['nombre'];
 
                         <div class="form-group mt-2 col-sm-12">
                             <h6><label class="">Nombre de Archivo</label></h6>
-                            <div class="border rounded form-control"><b><?php echo ($nombre) ? $nombre : "1234.png"?></b></div>
+                            <div class="border rounded form-control"><b><?php echo ($nombre) ? $nombre : "1234.png" ?></b></div>
                             <div class="invalid-feedback"></div>
                         </div>
 
@@ -61,10 +62,9 @@ $nombre = $info['nombre'];
                             <h6><label class="" for="usuario">Usuario</label></h6>
                             <select name="usuario" id="usuario" class="form-control">
                                 <?php
-                                foreach (Usuario::listar() as $user)
-                                {
+                                foreach (Usuario::listar() as $user) {
                                     $selected = ($user->get_id() == $usuario) ? 'selected="selected"' : '';
-                                    echo '<option value="'.$user->get_id().'" '.$selected.'>'.$user->get_apellido().'</option>';
+                                    echo '<option value="' . $user->get_id() . '" ' . $selected . '>' . $user->get_apellido() . '</option>';
                                 }
                                 ?>
                             </select>
@@ -93,14 +93,13 @@ $nombre = $info['nombre'];
 
 
 <style>
-@media (max-width: 576px)
-{ 
-    #contenedor {
-        width: 100%!important;
+    @media (max-width: 576px) {
+        #contenedor {
+            width: 100% !important;
+        }
     }
-}
 </style>
 
-<?php 
+<?php
 include_once("../estructura/pie.php");
 ?>

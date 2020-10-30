@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?PHP $Titulo ?></title>
+    <title><?PHP echo $Titulo ?></title>
 
     <!-- Dependencias -->
     <script src="../../../publico/js/jquery/jquery-3.5.1.min.js"></script>
@@ -25,15 +25,7 @@
     <style>
         @font-face {
             font-family: Satisfy;
-            src: '../../../publico/css/fonts/Satisfy-Regular.ttf';
-        }
-
-        input:focus,
-        textarea:focus,
-        select:focus,
-        button:focus {
-            outline: none !important;
-            box-shadow: inset 0 -1px 0 #ddd;
+            src: '../../../publico/css/fuentes/Satisfy-Regular.ttf';
         }
     </style>
 

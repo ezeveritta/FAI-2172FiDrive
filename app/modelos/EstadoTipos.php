@@ -1,11 +1,10 @@
-<?php 
+<?php
+
 /**
  * Alumno: Ezequiel Vera
  * Legajo: FAI-2172
  * Fecha: 23/10/2020
  */
-
-include_once('Usuario.php');
 
 class EstadoTipos
 {
@@ -34,7 +33,7 @@ class EstadoTipos
         $this->set_activo($activo);
     }
 
-     /**
+    /**
      * Función para buscar datos desde la base de datos según un id dado
      * @param int $id
      * 
@@ -43,33 +42,27 @@ class EstadoTipos
     public function buscar($id)
     {
         $bd = new BaseDatos();
-		$query = "SELECT * from estadotipos  where idestadotipos =" . $id;
+        $query = "SELECT * from estadotipos  where idestadotipos =" . $id;
         $output = false;
-        
+
         // Inicio conexión con bd
-        if($bd->Iniciar())
-        {
+        if ($bd->Iniciar()) {
             // Ejecuto la consulta
-            if($bd->Ejecutar($query))
-            {
+            if ($bd->Ejecutar($query)) {
                 // Recupero la información
-                if($row2 = $bd->Registro())
-                {
-				    $this->set_id($id);
-					$this->set_descripcion($row2['etdescripcion']);
+                if ($row2 = $bd->Registro()) {
+                    $this->set_id($id);
+                    $this->set_descripcion($row2['etdescripcion']);
                     $this->set_activo($row2['etactivo']);
-					$output= true;
-				}				
-			
-            } else
-            {
-		 		$this->set_error($bd->getError());
-			}
-        } else
-        {
-		 	$this->set_error($bd->getError());
-		}
-		return $output;
+                    $output = true;
+                }
+            } else {
+                $this->set_error($bd->getError());
+            }
+        } else {
+            $this->set_error($bd->getError());
+        }
+        return $output;
     }
 
     /**
@@ -80,46 +73,41 @@ class EstadoTipos
      */
     public static function listar($where = "", $order = "idestadotipos")
     {
-	    $listaEstadoTipos = null;
+        $listaEstadoTipos = null;
         $query = "Select * from estadotipos";
-        
-		if ($where != "")
+
+        if ($where != "")
             $query = $query . ' where ' . $where;
-        
+
         $query .= " order by " . $order;
-        
+
         // Iniciamos conexión con bd
-		$bd = new BaseDatos();
-        if($bd->Iniciar())
-        {
+        $bd = new BaseDatos();
+        if ($bd->Iniciar()) {
             // Ejecutamos la consulta
-            if($bd->Ejecutar($query))
-            {				
-				$listaEstadoTipos = array();
-                while($row2 = $bd->Registro())
-                {
-				    $id = $row2['idestadotipos'];
-					$descripcion = $row2['etdescripcion'];
-					$activo = $row2['etactivo'];
-                
+            if ($bd->Ejecutar($query)) {
+                $listaEstadoTipos = array();
+                while ($row2 = $bd->Registro()) {
+                    $id = $row2['idestadotipos'];
+                    $descripcion = $row2['etdescripcion'];
+                    $activo = $row2['etactivo'];
+
                     // Creamos el nuevo objeto Usuario con los datos obtenidos
                     $tmpEstadoTipo = new EstadoTipos();
                     $tmpEstadoTipo->set_id($id);
-                    $tmpEstadoTipo->cargar($descripcion,$activo);
+                    $tmpEstadoTipo->cargar($descripcion, $activo);
                     // Agregamos al arreglo
-					array_push($listaEstadoTipos, $tmpEstadoTipo);
-				}
-            } else
-            {
-		 		$listaEstadoTipos = $bd->getError();
-			}
-        } else
-        {
+                    array_push($listaEstadoTipos, $tmpEstadoTipo);
+                }
+            } else {
+                $listaEstadoTipos = $bd->getError();
+            }
+        } else {
             $listaEstadoTipos = $bd->getError();
         }
 
-		return $listaEstadoTipos;
-	}	
+        return $listaEstadoTipos;
+    }
 
 
     /**
@@ -128,90 +116,79 @@ class EstadoTipos
      */
     public function insertar()
     {
-		$bd     = new BaseDatos();
-		$output = false;
-		$query  = "INSERT INTO estadotipos(etdescripcion, etactivo)
-                   VALUES ('".$this->get_descripcion()."',".$this->get_activo().")";
-                   
-        // Iniciamos conexión
-        if($bd->Iniciar())
-        {
-            // Ejecutamos consulta
-            if($id = $bd->Ejecutar($query))
-            {
-                $this->set_id($id);
-			    $output = true;
-            } else
-            {
-				$this->set_error($bd->getError());
-			}
+        $bd     = new BaseDatos();
+        $output = false;
+        $query  = "INSERT INTO estadotipos(etdescripcion, etactivo)
+                   VALUES ('" . $this->get_descripcion() . "'," . $this->get_activo() . ")";
 
-        } else
-        {
-			$this->set_error($bd->getError());
+        // Iniciamos conexión
+        if ($bd->Iniciar()) {
+            // Ejecutamos consulta
+            if ($id = $bd->Ejecutar($query)) {
+                $this->set_id($id);
+                $output = true;
+            } else {
+                $this->set_error($bd->getError());
+            }
+        } else {
+            $this->set_error($bd->getError());
         }
-        
-		return $output;
+
+        return $output;
     }
 
     /**
      * Esta función modifica los datos de la bd según las variables instancias
      * @return boolean
      */
-    public function modificar(){
-	    $output = false; 
-	    $bd = new BaseDatos();
-		$query = "UPDATE estadotipos SET etdescripcion='".$this->get_descripcion()
-               ."',etactivo=". $this->get_activo()
-               ." WHERE idestadotipos=".$this->get_id();
-               
+    public function modificar()
+    {
+        $output = false;
+        $bd = new BaseDatos();
+        $query = "UPDATE estadotipos SET etdescripcion='" . $this->get_descripcion()
+            . "',etactivo=" . $this->get_activo()
+            . " WHERE idestadotipos=" . $this->get_id();
+
         // Iniciamos conexión
-        if($bd->Iniciar())
-        {
+        if ($bd->Iniciar()) {
             // Ejecutamos consulta
-            if($bd->Ejecutar($query))
-            {
-			    $output = true;
-            } else
-            {
-				$this->set_error($bd->getError());
-			}
-        } else
-        {
-			$this->set_error($bd->getError());
+            if ($bd->Ejecutar($query)) {
+                $output = true;
+            } else {
+                $this->set_error($bd->getError());
+            }
+        } else {
+            $this->set_error($bd->getError());
         }
-        
-		return $output;
+
+        return $output;
     }
-    
+
     /**
      * Con ésta función eliminamos una tupla según la id.
      * @return boolean
      */
-    public function eliminar(){
-		$bd = new BaseDatos();
+    public function eliminar()
+    {
+        $bd = new BaseDatos();
         $output = false;
-        
+
         // Iniciamos conexión
-        if($bd->Iniciar())
-        {
-            $query = "DELETE FROM estadotipos WHERE idestadotipos=".$this->get_id();
+        if ($bd->Iniciar()) {
+            $query = "DELETE FROM estadotipos WHERE idestadotipos=" . $this->get_id();
 
             // Ejecutamos consulta
-            if($bd->Ejecutar($query))
-            {
+            if ($bd->Ejecutar($query)) {
                 $output = true;
-            } else
-            {
+            } else {
                 $this->set_error($bd->getError());
             }
-        } else
-        {
-			$this->set_error($bd->getError());
+        } else {
+            $this->set_error($bd->getError());
         }
-        
-		return $output; 
-	}
+
+        return $output;
+    }
 
 
     /**
@@ -230,8 +207,8 @@ class EstadoTipos
     public function __toString()
     {
         return "<b>Objeto EstadoTipos: </b>"
-             . "<br>id: " . $this->get_id()
-             . "<br>descipción: " . $this->get_descripcion()
-             . "<br>activo: " . $this->get_activo();
+            . "<br>id: " . $this->get_id()
+            . "<br>descipción: " . $this->get_descripcion()
+            . "<br>activo: " . $this->get_activo();
     }
 }

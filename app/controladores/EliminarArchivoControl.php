@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Alumno: Ezequiel Vera
  * Legajo: FAI-2172
@@ -18,19 +19,17 @@ class EliminarArchivoControl
      */
     public function validar($datos)
     {
-        if( !isset($datos['usuario']) || !isset($datos['motivo']) || !isset($datos['idArchivoCargado']) )
-        {
+        if (!isset($datos['usuario']) || !isset($datos['motivo']) || !isset($datos['idArchivoCargado'])) {
             $this->set_error('Uno ó más datos no se cargaron correctamente.');
             return false;
         }
-        
+
         // Valido que el campo usuario esté seleccionado
-        if (strlen($datos['usuario']) == 0)
-        {
+        if (strlen($datos['usuario']) == 0) {
             $this->set_error('El campo "usuario" debe ser seleccionado.');
             return false;
         }
-        
+
         // Validación correcta
         $this->set_error('');
         return true;
@@ -67,9 +66,8 @@ class EliminarArchivoControl
         $ArchivoCargadoEstado->set_estadoTipos('4');
         $ArchivoCargadoEstado->set_descripcion($descripcion);
         $ArchivoCargadoEstado->set_usuario($usuario);
-         if (!$ArchivoCargadoEstado->modificar())
-        {
-            $this->set_error( $ArchivoCargadoEstado->get_error() );
+        if (!$ArchivoCargadoEstado->modificar()) {
+            $this->set_error($ArchivoCargadoEstado->get_error());
             return false;
         }
 
@@ -86,12 +84,12 @@ class EliminarArchivoControl
         */
 
         //Operación exitosa
-        $this->set_ruta( dirname($ArchivoCargado->get_linkAcceso()) );
+        $this->set_ruta(dirname($ArchivoCargado->get_linkAcceso()));
         $this->set_error('');
         return true;
     }
 
-     /**
+    /**
      * Esta función retorna la información obtenida de las tablas "archivocargado" y "archivocargadoestado" segun la id
      * @param string $id idarchivocargadoestado
      * 
@@ -106,42 +104,34 @@ class EliminarArchivoControl
         $ArchivoCargado = new ArchivoCargado();
 
         // SI busco por ID
-        if(isset($datos['id']))
-        {
+        if (isset($datos['id'])) {
             // Busco registro en la tabla archivocargadoestado
-            if (!$ArchivoCargadoEstado->buscar($datos['id']))
-            {
+            if (!$ArchivoCargadoEstado->buscar($datos['id'])) {
                 $this->set_error("No se encontró un registro con la id: {$datos['id']}");
                 return false;
             }
-            
+
             // Busco registro en la tabla archivocargado
             $idArchivoCargadoEstado = $ArchivoCargadoEstado->get_archivoCargado()->get_id();
-            if (!$ArchivoCargado->buscar($idArchivoCargadoEstado))
-            {
+            if (!$ArchivoCargado->buscar($idArchivoCargadoEstado)) {
                 $this->set_error("No se encontró un registro con la id: $idArchivoCargadoEstado");
                 return false;
             }
-
         }
 
         // Si busco por ruta
-        else
-        {
+        else {
             // Busco registro en la tabla archivocargado donde aclinkacceso es igual a la ruta pasada por parámetro
-            if (!$ArchivoCargado->buscar($datos['archivo'], 'aclinkacceso'))
-            {
+            if (!$ArchivoCargado->buscar($datos['archivo'], 'aclinkacceso')) {
                 $this->set_error("No se encontró un registro del archivo: {$datos['archivo']}");
                 return false;
             }
 
             // Busco registro en la tabla archivocargadoestado con el id encontrado previamente
-            if (!$ArchivoCargadoEstado->buscar($ArchivoCargado->get_id()))
-            {
+            if (!$ArchivoCargadoEstado->buscar($ArchivoCargado->get_id())) {
                 $this->set_error("No se encontró un registro perteneciente al id: {$ArchivoCargado->get_id()}");
                 return false;
             }
-
         }
 
         // Si llegamos a éste punto, la operación fue exitosa
@@ -155,11 +145,11 @@ class EliminarArchivoControl
     }
 
     // Métodos de acceso
-    public function get_ruta(){ return $this->ruta; }
-    public function get_error(){ return $this->error; }
-    public function set_ruta($data){ $this->ruta = $data; }
-    public function set_error($data){ $this->error = $data; }
-    public function __toString() 
+    public function get_ruta() { return $this->ruta; }
+    public function get_error() { return $this->error; }
+    public function set_ruta($data) { $this->ruta = $data; }
+    public function set_error($data) { $this->error = $data; }
+    public function __toString()
     {
         return  "Objeto EliminarArchivoControl:
                  <br> Error: $this->get_error()
