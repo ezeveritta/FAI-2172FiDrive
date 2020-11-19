@@ -120,10 +120,10 @@ class ArchivoCargadoEstado
                     array_push($listaArchivosCargadosEstado, $tmpArchivoCargadoEstado);
                 }
             } else {
-                $listaArchivosCargadosEstado = $bd->getError();
+                $listaArchivosCargadosEstado = "Error al consultar Base de Datos.";
             }
         } else {
-            $listaArchivosCargadosEstado = $bd->getError();
+            $listaArchivosCargadosEstado = "Error al conectar con la Base de Datos.";
         }
 
         return $listaArchivosCargadosEstado;
