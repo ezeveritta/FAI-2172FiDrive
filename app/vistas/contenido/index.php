@@ -140,6 +140,20 @@ if (isset($datos['orden']) &&  isset($datos['direccion']))
                                 }
                             </style>
                         </li>
+
+
+                        <!-- Opciones de archivo -->
+                        <li class="nav-item">
+                            <form action="accion.php" method="post" id="opcion_descargar" class="d-none">
+                                <input type="hidden" name="accion" value="descargar">
+                                <input type="hidden" name="ruta" value="<?php echo $ruta ?>">
+                                <div id="elementos_seleccionados"></div>
+                                <button type="submit" class="btn btn-sm ml-3 p-2" style="border-radius: 10px; background: white; border: 1px solid grey; color: #444" id="btn_descargar">
+                                    <i class="fa fa-download pl-4"></i>
+                                    <span style="padding-right: 6px; margin-left: -4px">Descargar</span>
+                                </button>
+                            </form>
+                        </li>
                     </ul>
                 </nav>
 
@@ -291,6 +305,8 @@ if (isset($datos['orden']) &&  isset($datos['direccion']))
 <script>
     $(document).ready(function() {
 
+        var arreglo_elementos_seleccionados = [];
+
         /** Esta función agrega estilo al elemento seleccionado
          */
         function seleccionarElemento(elemento) {
@@ -305,8 +321,28 @@ if (isset($datos['orden']) &&  isset($datos['direccion']))
 
         // Éste evento selecciona el elemento clickeado
         $("#contenido > *").on('click', function() {
-            deselccionarElemento($("#contenido > *"));
-            seleccionarElemento($(this));
+            // Si está presionado el shift, selecciono multiple
+            if (event.ctrlKey) {
+                // Si ya está seleccionado, lo deselecciono
+                if ($(this).hasClass('selected')) {
+                    console.log('no tiene selected');
+                    deselccionarElemento($(this));
+                    arreglo_elementos_seleccionados = jQuery.grep(arreglo_elementos_seleccionados, function(value) {
+                        return value != $(this)[0].innerText;
+                    });
+                    actualizar_formulario_seleccionados();
+                } else {
+                    console.log('si tiene selected');
+                    seleccionarElemento($(this));
+                    arreglo_elementos_seleccionados.push($(this)[0].innerText);
+                    actualizar_formulario_seleccionados();
+                }
+            } else {
+                deselccionarElemento($("#contenido > *"));
+                seleccionarElemento($(this));
+                arreglo_elementos_seleccionados = [$(this)[0].innerText];
+                actualizar_formulario_seleccionados();
+            }
         });
 
         // Ésta función abre el elemento seleccionado
@@ -329,8 +365,34 @@ if (isset($datos['orden']) &&  isset($datos['direccion']))
         $("#contenido").on('click', function(e) {
             if ($(e.target).hasClass('list-group')) {
                 deselccionarElemento($(this).children());
+                arreglo_elementos_seleccionados = [];
+                actualizar_formulario_seleccionados();
             }
         });
+
+        function actualizar_formulario_seleccionados() {
+            var contenedor = $('#elementos_seleccionados'),
+                numero = 1;
+
+            contenedor.html('');
+
+            arreglo_elementos_seleccionados.forEach(item => {
+                contenedor.append('<input type="hidden" name="item_' + numero + '" value="' + item + '">');
+                numero++;
+            });
+
+            if (arreglo_elementos_seleccionados.length > 0) {
+                $('#opcion_descargar').removeClass('d-none');
+                if (arreglo_elementos_seleccionados.length > 1) {
+                    $('#btn_descargar span').html('Comprimir y descargar');
+                } else {
+                    $('#btn_descargar span').html('Descargar');
+                }
+            } else {
+                $('#opcion_descargar').addClass('d-none');
+                $('#btn_descargar span').html('Descargar');
+            }
+        }
 
     });
 </script>

@@ -16,6 +16,99 @@ class ContenidoControl
     }
 
     /**
+     * Esta función crea un archivo comprimido con la informacion pasada por parametro
+     * @param array $datos Contiene todos los datos provenientes del formulario
+     * 
+     * @return boolean
+     */
+    public function comprimir($datos)
+    {
+        // Validamos la información
+        if (!isset($datos['item_1'])) {
+            $this->set_error("No se especificó un archivo.");
+            return false;
+        }
+
+        // Obtengo los archivos a descargar
+        $arreglo_items = array();
+        foreach ($datos as $key => $valor) {
+            $exp_key = explode('_', $key);
+            if ($exp_key[0] == 'item') {
+                array_push($arreglo_items, $valor);
+            }
+        }
+
+        // Definimos la ruta donde crear el archivo comprimido
+        $rutaDestino = "../../../archivos/temporales";
+        $rutaArchivos = "{$datos['ruta']}";
+        $exclusiveLength = 9;
+
+        // Definimos las variables a utilizar
+        $ZIP = new ZipArchive();
+        $fecha = new DateTime();
+        $nombreZip = 'FiDrive_descarga_' . $fecha->format("Y-m-d_H-i-s") . '.zip';
+        $comentario = "Ésta es una descripción.";
+
+        // Creamos el archivo Zip
+        if ($ZIP->open($rutaDestino . '/' . $nombreZip, ZIPARCHIVE::CREATE) === false) 
+        {
+            $this->set_error("Error al generar archivo comprimido.");
+            return false;
+        }
+
+        // Añadimos los archivos
+        foreach ($arreglo_items as $item) {
+            $rutaItem = '../../../' . $rutaArchivos . $item;
+            $rutaLocal = substr($rutaItem, $exclusiveLength, strlen($rutaItem));
+
+            // Si es una carpeta
+            if (is_dir($rutaItem)) {
+                $this->folderToZip($rutaItem, $item, $ZIP, $exclusiveLength);
+            }
+
+            // Si es un archivo, lo añadimos
+            else {
+                $ZIP->addFile($rutaItem, $rutaLocal);
+            }
+        }
+
+        // Guardamos el archivo
+        $ZIP->setArchiveComment($comentario);
+        $ZIP->close();
+
+        // Operación exitosa
+        $this->set_error('');
+        return $nombreZip;
+    }
+
+    private function folderToZip($folder, $nombre, &$zipFile, $exclusiveLength)
+    {
+        // Abro la carpeta
+        $handle = opendir($folder);
+
+        // Por cada archivo dentro
+        while (false !== $f = readdir($handle)) {
+            
+            if ($f != '.' && $f != '..') {
+
+                $filePath = "$folder/$f";
+
+                // Remove prefix from file path before add to zip.
+                $localPath = substr($filePath, $exclusiveLength, strlen($filePath));
+
+                if (is_file($filePath)) {
+                    $zipFile->addFile($filePath, $localPath);
+                } elseif (is_dir($filePath)) {
+                    // Add sub-directory.
+                    $zipFile->addEmptyDir($localPath);
+                    $this->folderToZip($filePath, $nombre, $zipFile, $exclusiveLength);
+                }
+            }
+        }
+        closedir($handle);
+    }
+
+    /**
      * Esta función crea una carpeta en la ruta pasada por parametro y el nombre.
      * @param array $datos Contiene todos los datos provenientes del formulario
      * 
@@ -74,9 +167,9 @@ class ContenidoControl
         $carpetas = array();
 
         while (($temp = readdir($direccion)) !== false) {
-            if ($temp !== "." && $temp !== ".." && !is_dir($ruta . '/' . $temp))    // Si es archivo
+            if ($temp !=="." && $temp !== ".." && $temp !== "temporales" && !is_dir($ruta . '/' . $temp))    // Si es archivo
                 array_push($archivos, $temp);
-            if ($temp !== "." && $temp !== ".." && is_dir($ruta . '/' . $temp))     // Si es carpeta
+            if ($temp !== "." && $temp !== ".." && $temp !== "temporales" && is_dir($ruta . '/' . $temp))     // Si es carpeta
                 array_push($carpetas, $temp);
         }
 
