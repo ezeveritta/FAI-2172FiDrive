@@ -58,7 +58,8 @@ class ContenidoControl
 
         // Añadimos los archivos
         foreach ($arreglo_items as $item) {
-            $rutaItem = '../../../' . $rutaArchivos . $item;
+            $rutaItem = '../../../' . $rutaArchivos . '/' . $item;
+            echo "<br>$rutaItem";
             $rutaLocal = substr($rutaItem, $exclusiveLength, strlen($rutaItem));
 
             // Si es una carpeta
