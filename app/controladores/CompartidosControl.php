@@ -17,16 +17,16 @@ class CompartidosControl
 
     /**
      * Esta función obtiene todo el contenido de la base de datos que tiene estado "compartido"
-     * 
+     * @param string $idusuario  : para filtrar cuales archivos mostrar
      * @return mixed null|array
      */
-    public function obtenerCompartidos()
+    public function obtenerCompartidos($idusuario)
     {
         $respuesta = null;
 
         // Obtengo de la BD los archivos compartidos
         $ArchivoCargadoEstado = new ArchivoCargadoEstado();
-        $arregloCompartidos   = $ArchivoCargadoEstado->listar("idestadotipos=2");
+        $arregloCompartidos   = $ArchivoCargadoEstado->listar("idestadotipos=2 AND idusuario=$idusuario");
 
         // Si el método da error, lo muestro.
         if (is_string($arregloCompartidos)) {

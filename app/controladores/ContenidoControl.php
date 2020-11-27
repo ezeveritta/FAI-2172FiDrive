@@ -152,7 +152,7 @@ class ContenidoControl
     public function abrirDirectorio($ruta)
     {
         $respuesta = null;
-        $ruta = '../../../' . $ruta;
+        $ruta = '../../' . $ruta;
 
         // Abro el directorio
         $direccion = opendir($ruta);
@@ -215,14 +215,14 @@ class ContenidoControl
                 // Por cada CARPETA en $contenido, obtengo su peso y lo guardo en el arreglo temporal
                 foreach ($contenido['carpetas'] as $nombre) {
                     $path = "$ruta/$nombre";
-                    $tamaño = folderSize('../../../' . $path);
+                    $tamaño = folderSize('../../' . $path);
                     array_push($temp_carpetas, ['nombre' => $nombre, 'tamaño' => $tamaño]);
                 }
 
                 // Por cada ARCHIVO en $contenido, obtengo su peso y lo guardo en el arreglo temporal
                 foreach ($contenido['archivos'] as $nombre) {
                     $path = "$ruta/$nombre";
-                    $tamaño = filesize('../../../' . $path);
+                    $tamaño = filesize('../../' . $path);
                     array_push($temp_archivos, ['nombre' => $nombre, 'tamaño' => $tamaño]);
                 }
 
@@ -266,7 +266,7 @@ class ContenidoControl
             // Omito los directorios sin nombre (doble barra)
             if ($nombreDirectorio != '') {
                 $HTML .= '<i class="fa fa-chevron-right px-2 icono-direcciones"></i>
-                          <a href="./index.php?carpeta=';
+                          <a href="./contenido.php?carpeta=';
                 // Valor de href
                 for ($f = 0; $f <= $indice; $f++) {
                     $HTML .=  "{$arregloDirecciones[$f]}/";
@@ -292,19 +292,19 @@ class ContenidoControl
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="item_' . $id . '_opciones">
                                     <div class="dropdown-item abrir">
-                                        <a href="./index.php?carpeta=' . $ruta . '/' . $nombre . '&accion=abrirCarpeta" class="text-dark btn-abrir">
+                                        <a href="./contenido.php?carpeta=' . $ruta . '/' . $nombre . '&accion=abrirCarpeta" class="text-dark btn-abrir">
                                             <i class="fa fa-folder-open text-muted"></i>
                                             Abrir
                                         </a>
                                     </div>
                                     <div class="dropdown-item">
-                                        <a href="../compartirarchivo/index.php?archivo=' . $ruta . '/' . $nombre . '" class="text-dark">
+                                        <a href="./compartirarchivo.php?archivo=' . $ruta . '/' . $nombre . '" class="text-dark">
                                             <i class="fa fa-link text-muted"></i>
                                             Compartir
                                         </a>
                                     </div>
                                     <div class="dropdown-item">
-                                        <a href="../eliminararchivo/index.php?archivo=' . $ruta . '/' . $nombre . '" class="text-danger">
+                                        <a href="./eliminararchivo.php?archivo=' . $ruta . '/' . $nombre . '" class="text-danger">
                                             <i class="fa fa-trash-alt"></i>
                                             Eliminar
                                         </a>
@@ -340,13 +340,13 @@ class ContenidoControl
                             </button>
                             <div class="dropdown-menu" aria-labelledby="item_' . $id . '_opciones">
                                 <div class="dropdown-item abrir">
-                                    <a href="../../../' . $ruta . '/' . $nombre . '" target="_blanck" class="btn bg-transparent btn-abrir">
+                                    <a href="../../' . $ruta . '/' . $nombre . '" target="_blanck" class="btn bg-transparent btn-abrir">
                                         <i class="fa fa-download text-muted"></i>
                                         Descargar
                                     </a>
                                 </div>
                                 <div class="dropdown-item">
-                                    <form action="../amarchivo/index.php" method="get">
+                                    <form action="./amarchivo.php" method="get">
                                         <input type="hidden" name="archivo" value="' . $ruta . '/' . $nombre . '">
                                         <button type="submit" class="btn bg-transparent">
                                             <i class="fa fa-edit text-muted"></i>
@@ -355,7 +355,7 @@ class ContenidoControl
                                     </form>
                                 </div>
                                 <div class="dropdown-item">
-                                    <form action="../compartirarchivo/index.php" method="post">
+                                    <form action="./compartirarchivo.php" method="post">
                                         <input type="hidden" name="archivo" value="' . $ruta . '/' . $nombre . '">
                                         <button type="submit" class="btn bg-transparent">
                                             <i class="fa fa-link text-muted"></i>
@@ -364,7 +364,7 @@ class ContenidoControl
                                     </form>
                                 </div>
                                 <div class="dropdown-item">
-                                    <form action="../eliminararchivo/index.php" method="get">
+                                    <form action="./eliminararchivo.php" method="get">
                                         <input type="hidden" name="archivo" value="' . $ruta . '/' . $nombre . '">
                                         <button type="submit" class="btn bg-transparent text-danger">
                                             <i class="fa fa-trash-alt"></i>
@@ -377,7 +377,7 @@ class ContenidoControl
 
         // Si el archivo es una imagen, la mostramos en lugar de un icono
         $HTML .= ($tipoArchivo == 'imagen')
-            ? '<div class="h-75 mb-2"><img src="../../../' . $ruta . '/' . $nombre . '"></img></div>'
+            ? '<div class="h-75 mb-2"><img src="../../' . $ruta . '/' . $nombre . '"></img></div>'
             : '<div class="h1 h-75 icono"><i class="fa fa-' . icono_archivo($tipoArchivo) . '"></i></div>';
 
         $HTML .=    '<div class="w-100 titulo" >' . texto_limitado($nombre) . '</div></li>';

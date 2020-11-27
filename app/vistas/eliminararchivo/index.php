@@ -55,7 +55,6 @@ echo get_aviso($datos);
                         <div class="form-group mt-2 col-sm-12">
                             <h6><label class="">Nombre de Archivo</label></h6>
                             <div class="border rounded form-control"><b><?php echo ($nombre) ? $nombre : "1234.png" ?></b></div>
-                            <div class="invalid-feedback"></div>
                         </div>
 
                         <div class="form-group mt-2 col-sm-12">

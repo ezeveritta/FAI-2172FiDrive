@@ -10,7 +10,7 @@
     
     
     <!-- Bootstrap -->
-    <script src="../../../publico/js/validator.js"></script>
+    <script src="../../publico/js/validator.js"></script>
 
     <script>
     $(document).ready(function(){

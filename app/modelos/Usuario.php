@@ -205,6 +205,38 @@ class Usuario
         return $output;
     }
 
+    /**
+     * Éste método valida que los datos provistos pertenezcan a un usuario en la base de datos
+     * @param string $usuario       : nombre de usuario
+     * @param string $contraseña    : contraseña sin md5
+     * @return mixed boolean|string
+     */
+    public static function validar_cuenta(string $usuario, string $contraseña)
+    {
+        $conexion = new BaseDatos();
+        $contraseña = md5($contraseña);
+        $consulta = "SELECT u.idusuario FROM usuario u  WHERE u.uslogin='$usuario' AND u.usclave='$contraseña' LIMIT 1";
+        
+        // Iniciamos conexión con BD.
+        if (!$conexion->Iniciar())
+        {
+            return false;
+        }
+
+        // Ejecutamos la consulta.
+        if (!$conexion->Ejecutar($consulta))
+        {
+            return false;
+        }
+
+        // Retornamos la información obtenida.
+        $row2 = $conexion->Registro();
+
+        if (isset($row2['idusuario'])) return $row2['idusuario'];
+
+        return false;
+    }
+
 
     /**
      * Metodos de Acceso
