@@ -43,9 +43,8 @@ if ($contenido === false) {
 if (isset($datos['orden']) &&  isset($datos['direccion']))
     $contenido = $control->ordenarContenido("archivos", $contenido, $datos['orden'], $datos['direccion']);
 
+echo get_aviso($datos); 
 ?>
-
-<?php echo get_aviso($datos); ?>
 <!-- Contenido -->
 <div class="col-md-10 col-xs-12">
     <div class="row h-100">

@@ -1,7 +1,7 @@
 <?php
 
-include_once('../../utiles/funciones.php');
 include_once('../controladores/SessionControl.php');
+include_once('../../utiles/funciones.php');
 include_once("../modelos/BaseDatos.php");
 include_once("../modelos/Usuario.php");
 include_once("../modelos/UsuarioRol.php");
@@ -18,9 +18,14 @@ include_once("../modelos/Rol.php");
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 $session = new SessionControl();
+
+$esAdmin  = false;
+$loggeado = false;
+
 # Si está logeado, obtengo la información principal del usuario
 if ($session->validar())
 {
+    $loggeado = true;
     // Datos del usuario
     $idusuario  = $session->get_idUsuario();
     $usuario    = $session->get_usuario();
@@ -76,7 +81,7 @@ if ($session->validar())
             </div>
             <div class="mr-3 pt-2">
                 <?php
-                if (SessionControl::validar())
+                if ($loggeado)
                 {
                     if ($esAdmin)
                     {

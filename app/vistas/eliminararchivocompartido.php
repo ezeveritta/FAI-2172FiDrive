@@ -1,23 +1,29 @@
 <?php 
-/**
- * Alumno: Ezequiel Vera
- * Legajo: FAI-2172
- * Fecha: 23/09/2020
- */
 
-$Titulo = "Alta-Mod Archivo"; 
-include_once("../estructura/cabecera.php");
+$sitio_titulo = "Eliminar Archivo Compartido - FAI-2172";
+include_once("estructura/cabecera.php");
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+///// PHP - eliminararchivocompartido
+///// File: /app/vistas/estructura/eliminararchivocompartido.php
+///// Date: 23/09/2020
+///// Description:
+////////// Vista donde el usuario puede eliminar la capacidad de compartir de un archivo
+////////// 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Verifico si el cliente está logeado
+if (!$loggeado)
+{
+    header('Location: login.php');
+    die();
+}
+
+// Errores, alertas, exitos
+echo get_aviso($datos);
 ?>
-<!-- Contenido 
 
-Etiqueta que muestra nombre del archivo compartido (Colocar valor por defecto 1234.png) |||||||
-
-Etiqueta que muestra la cantidad de veces que se compartió ||
- 
-Motivo de ya no compartir el Archivo ||||||||||
-
-Usuario que lo carga (Seleccionar desde un Combo, los usuarios posibles son: admin, visitante, y usted) ||||||
--->
 <div class="col-md-10">
     <div class="row h-100">
         <div class="col-sm-12 my-5">

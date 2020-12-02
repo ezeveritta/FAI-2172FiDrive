@@ -1,26 +1,38 @@
 <?php
 
-$Titulo = "Alta-Mod Archivo";
-include_once("../estructura/cabecera.php");
-include_once('../../modelos/BaseDatos.php');
-include_once('../../modelos/EstadoTipos.php');
-include_once("../../modelos/Usuario.php");
-include_once('../../modelos/ArchivoCargado.php');
-include_once('../../modelos/ArchivoCargadoEstado.php');
-include_once("../../controladores/EliminarArchivoControl.php");
+$sitio_titulo = "Eliminar Archivo - FAI-2172";
+include_once("estructura/cabecera.php");
 
-/**
- * Alumno: Ezequiel Vera
- * Legajo: FAI-2172
- * Fecha: 30/09/2020
- */
+include_once("../modelos/EstadoTipos.php");
+include_once("../modelos/ArchivoCargado.php");
+include_once("../modelos/ArchivoCargadoEstado.php");
+include_once("../controladores/EliminarArchivoControl.php");
 
-$control = new EliminarArchivoControl();
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+///// PHP - amarchivo
+///// File: /app/vistas/eliminararchivo.php
+///// Date: 30/09/2020
+///// Description:
+////////// Vista donde el usuario puede eliminar un archivo
+////////// 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Verifico si el cliente está logeado
+if (!$loggeado)
+{
+    header('Location: login.php');
+    die();
+}
+
+// Obtengo datos
 $datos = data_submitted();
 
+$control = new EliminarArchivoControl();
+
 // Si no hay identificador del archivo, vuelvo a la vista "contenido"
-if (!isset($datos['id']) && !isset($datos['archivo'])) {
-    header("Location: ../contenido/index.php?error=Se esperaba un identificador.");
+if ( !isset($datos['id']) ) {
+    header("Location: contenido.php?error=Se esperaba un identificador.");
     die;
 }
 
@@ -29,7 +41,7 @@ $info = $control->get_info($datos);
 
 // Verifico que se encontró un registro en la BD
 if ($info == null) {
-    header("Location: ../contenido/index.php?error={$control->get_error()}");
+    header("Location: contenido.php?error={$control->get_error()}");
     die;
 }
 
@@ -42,13 +54,14 @@ $nombre  = $info['nombre'];
 // Errores, alertas, exitos
 echo get_aviso($datos);
 ?>
+
 <!-- Contenido -->
 <div class="col-md-10">
     <div class="row h-100">
         <div class="col-sm-12 my-5">
 
             <div class="card card-block w-75 mx-auto" id="contenedor">
-                <form name="eliminarArchivo" id="eliminarArchivo" class="form w-100" action="accion.php" method="post" data-toggle="validator">
+                <form name="eliminarArchivo" id="eliminarArchivo" class="form w-100" action="accion/eliminararchivo.php" method="post" data-toggle="validator">
                     <div class="row p-4">
                         <h4 class="text-center w-100 pb-3">Eliminar las opciones de compartir un Archivo</h4>
 
@@ -100,5 +113,5 @@ echo get_aviso($datos);
 </style>
 
 <?php
-include_once("../estructura/pie.php");
+include_once("estructura/pie.php");
 ?>

@@ -1,26 +1,38 @@
 <?php
 
-$Titulo = "Compartir Archivo";
-include_once("../estructura/cabecera.php");
-include_once("../../modelos/BaseDatos.php");
-include_once("../../modelos/Usuario.php");
-include_once("../../modelos/EstadoTipos.php");
-include_once("../../modelos/ArchivoCargado.php");
-include_once("../../modelos/ArchivoCargadoEstado.php");
-include_once("../../controladores/CompartirArchivoControl.php");
+$Titulo = "Compartir Archivo - FAI-2172";
+include_once("estructura/cabecera.php");
 
-/**
- * Alumno: Ezequiel Vera
- * Legajo: FAI-2172
- * Fecha: 23/09/2020
- */
+include_once("../modelos/EstadoTipos.php");
+include_once("../modelos/ArchivoCargado.php");
+include_once("../modelos/ArchivoCargadoEstado.php");
+include_once("../controladores/CompartirArchivoControl.php");
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+///// PHP - compartirarchivo
+///// File: /app/vistas/compartirarchivo.php
+///// Date: 23/09/2020
+///// Description:
+////////// Vista donde el usuario puede compartir un archivo
+////////// 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Verifico si el cliente está logeado
+if (!SessionControl::validar())
+{
+    header('Location: login.php');
+    die();
+}
+
+// Obtengo datos
 $datos = data_submitted();
+
 $control = new CompartirArchivoControl();
 
 // Si no hay identificador del archivo, vuelvo a la vista "contenido"
-if (!isset($datos['id']) && !isset($datos['archivo'])) {
-    header("Location: ../contenido/index.php?error=Se esperaba un identificador.");
+if ( !isset($datos['id']) ) {
+    header( "Location: ../compartidos.php?error=Se esperaba un identificador." );
     die;
 }
 
@@ -29,7 +41,7 @@ $info = $control->get_info($datos);
 
 // Verifico que se encontró un registro en la BD
 if ($info == null) {
-    //header("Location: ../contenido/index.php?error={$control->get_error()}");
+    header( "Location: ../compartidos.php?error={$control->get_error()}" );
     die;
 }
 
@@ -54,7 +66,7 @@ echo get_aviso($datos);
         <div class="col-sm-12 my-5">
 
             <div class="card card-block w-75 mx-auto" id="contenedor">
-                <form class="form w-100" action="accion.php" method="post" enctype="multipart/form-data">
+                <form class="form w-100" action="accion/compartirarchivo.php" method="post" enctype="multipart/form-data">
                     <div class="row p-4">
                         <h4 class="text-center w-100 pb-3">Compartir Archivo</h4>
 
@@ -164,5 +176,5 @@ echo get_aviso($datos);
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
 
 <?php
-include_once("../estructura/pie.php");
+include_once("estructura/pie.php");
 ?>
