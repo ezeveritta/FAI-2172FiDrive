@@ -29,7 +29,7 @@ class AmarchivoControl
     public function validar($datos, $archivo = false)
     {
         // Valido que existan valores
-        if (!isset($datos['nombre']) || !isset($datos['usuario']) || !isset($datos['descripcion']) || !isset($datos['icono']) || $archivo === null) {
+        if (!isset($datos['nombre']) || !isset($datos['descripcion']) || !isset($datos['icono']) || $archivo === null) {
             $this->set_error('Uno ó más datos no se cargaron correctamente.');
             return false;
         }
@@ -93,7 +93,7 @@ class AmarchivoControl
         }
 
         // Copiamos el archivo y cargamos info
-        $ruta_archivo = "../../../{$datos['ruta']}/{$datos['nombre']}";
+        $ruta_archivo = "../../../archivos/{$datos['ruta']}/{$datos['nombre']}";
         if (!copy($archivo['tmp_name'], $ruta_archivo)) {
             $ArchivoCargado->eliminar();       // eliminamos lo cargado previamente
             $ArchivoCargadoEstado->eliminar(); // .
@@ -135,7 +135,7 @@ class AmarchivoControl
         $ArchivoCargado->set_linkAcceso($linkNuevo);
 
         // Modificamos el archivo local
-        if (!rename('../../../' . $linkViejo, '../../../' . $linkNuevo)) {
+        if (!rename('../../../archivos/' . $linkViejo, '../../../archivos/' . $linkNuevo)) {
             $this->set_error('No se pudo modificar el archivo en el servidor.');
             return false;
         }
@@ -143,7 +143,7 @@ class AmarchivoControl
         // Modificamos la BD
         if (!$ArchivoCargado->modificar()) {
             $this->set_error('No se pudo modificar la Base de Datos.');
-            rename('../../../' . $linkNuevo, '../../../' . $linkViejo);
+            rename('../../../archivos/' . $linkNuevo, '../../../archivos/' . $linkViejo);
             return false;
         }
 
@@ -159,7 +159,7 @@ class AmarchivoControl
      * 
      * @return array 
      */
-    public function get_info($datos)
+    public function get_info($datos, $idUsuario)
     {
         // Modelos a usar
         $ArchivoCargado = new ArchivoCargado();
@@ -167,11 +167,10 @@ class AmarchivoControl
         // Arreglo base a retornar
         $arreglo = array(
             'nombre' => "1234.png",
-            'usuario' => "1",
-            'descripcion' => "<b>Esta es</b> una descripción genérica, si lo necesita la puede <i>cambiar</i>.",
+            'descripcion' => "<b>E</b>sta es una descripción genérica, si lo necesita la puede <i>cambiar</i>.",
             'icono' => "",
             'clave' => 0,
-            'ruta' => "archivos",
+            'ruta' => "$idUsuario/archivos",
             'id' => null
         );
 
@@ -198,17 +197,7 @@ class AmarchivoControl
             }
         }
 
-        // Si busco por ruta
-        elseif (isset($datos['archivo'])) {
-            // Busco registro en la tabla archivocargado donde aclinkacceso es igual a la ruta pasada por parámetro
-            if (!$ArchivoCargado->buscar($datos['archivo'], 'aclinkacceso')) {
-                $this->set_error("No se encontró un registro del archivo: {$datos['archivo']}");
-                return $arreglo;
-            }
-        }
-
         $arreglo['nombre'] = $ArchivoCargado->get_nombre();
-        $arreglo['usuario'] = $ArchivoCargado->get_usuario()->get_id();
         $arreglo['descripcion'] = $ArchivoCargado->get_descripcion();
         $arreglo['icono'] = $ArchivoCargado->get_icono();
         $arreglo['clave'] = 1;

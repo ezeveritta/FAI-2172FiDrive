@@ -19,17 +19,17 @@ $datos = data_submitted();
 // Verificamos que los campos sean validos
 if (!$control->validar($datos))
 {
-    header( "Location: index.php?id={$datos['id']}&error={$control->get_error()}" );
+    header( "Location: ../compartirarchivo.php?id={$datos['id']}&error={$control->get_error()}" );
     die;
 }
 
 // Si hay un error, vuelvo al formulario
 if (!$control->cargar($datos))
 {
-    header( "Location: index.php?id={$datos['id']}&error={$control->get_error()}" );
+    header( "Location: ../compartirarchivo.php?id={$datos['id']}&error={$control->get_error()}" );
     die;
 } 
 
 // Si se carga, regresamos a la vista contenido
-header( "Location: ../contenido/index.php?carpeta={$control->get_ruta()}&exito=Operación completada." );
+header( "Location: ../compartidos.php?carpeta={$control->get_ruta()}&exito=Operación completada." );
 die;

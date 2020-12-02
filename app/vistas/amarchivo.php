@@ -32,12 +32,11 @@ $datos = data_submitted();
 $control = new AmarchivoControl();
 
 // obtengo la información para utilizar en la página
-$info = $control->get_info($datos);
+$info = $control->get_info($datos, $usuario->get_id());
 
 // seteo esa info en variables para mayor comodidad
 $ruta = $info['ruta'];
 $nombre = $info['nombre'];
-$usuario = $info['usuario'];
 $descripcion = $info['descripcion'];
 $icono = $info['icono'];
 $clave = $info['clave'];
@@ -52,7 +51,7 @@ echo get_aviso($datos);
         <div class="col-sm-12 my-3">
 
             <div class="card card-block w-75 mx-auto" id="contenedor">
-                <form id="form_amarchivo" class="form w-100" action="accion.php" method="post" enctype="multipart/form-data" data-toggle="validator">
+                <form id="form_amarchivo" class="form w-100" action="accion/amarchivo.php" method="post" enctype="multipart/form-data" data-toggle="validator">
                     <div class="row p-3">
                         <?php
                         if ($clave == 0) {
@@ -80,7 +79,8 @@ echo get_aviso($datos);
 
                         <div class="form-group col-sm-4">
                             <h6><label class="" for="usuario">Usuario</label></h6>
-                            <div class="border rounded form-control"><b><?php echo $usuario ?></b></div>
+                            <div class="border rounded form-control"><b><?php echo $usuario->get_login() ?></b></div>
+                            <input type="hidden" name="usuario" value="<?php echo $usuario->get_id() ?>">
                         </div>
 
                         <div class="form-group col-sm-12">

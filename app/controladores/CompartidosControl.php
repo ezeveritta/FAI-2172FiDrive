@@ -127,7 +127,7 @@ class CompartidosControl
             // Omito los directorios sin nombre (doble barra)
             if ($nombreDirectorio != '') {
                 $HTML .= '<i class="fa fa-chevron-right px-2 icono-direcciones"></i>
-                          <a href="./index.php?carpeta=';
+                          <a href="./compartidos.php?carpeta=';
                 // Valor de href
                 for ($f = 0; $f <= $indice; $f++) {
                     $HTML .=  "{$arregloDirecciones[$f]}/";
@@ -165,13 +165,13 @@ class CompartidosControl
                             </button>
                             <div class="dropdown-menu" aria-labelledby="item_' . $id . '_opciones">
                                 <div class="dropdown-item abrir">
-                                    <a href="../../../' . $linkAcceso . '" target="_blanck" class="btn bg-transparent btn-abrir">
+                                    <a href="../../archivos/' . $linkAcceso . '" target="_blanck" class="btn bg-transparent btn-abrir">
                                         <i class="fa fa-download text-muted"></i>
                                         Descargar
                                     </a>
                                 </div>
                                 <div class="dropdown-item">
-                                    <form action="../amarchivo/index.php" method="get">
+                                    <form action="amarchivo.php" method="get">
                                         <input type="hidden" name="id" value="' . $idArchivoCargado . '">
                                         <button type="submit" class="btn bg-transparent">
                                             <i class="fa fa-edit text-muted"></i>
@@ -180,7 +180,7 @@ class CompartidosControl
                                     </form>
                                 </div>
                                 <div class="dropdown-item">
-                                    <form action="../compartirarchivo/index.php" method="post">
+                                    <form action="compartirarchivo.php" method="post">
                                         <input type="hidden" name="id" value="' . $idArchivoCargado . '">
                                         <button type="submit" class="btn bg-transparent">
                                             <i class="fa fa-link text-muted"></i>
@@ -189,7 +189,7 @@ class CompartidosControl
                                     </form>
                                 </div>
                                 <div class="dropdown-item">
-                                    <form action="../eliminararchivo/index.php" method="get">
+                                    <form action="eliminararchivo.php" method="get">
                                         <input type="hidden" name="id" value="' . $idArchivoCargado . '">
                                         <button type="submit" class="btn bg-transparent text-danger">
                                             <i class="fa fa-trash-alt"></i>
@@ -202,7 +202,7 @@ class CompartidosControl
 
         // Si el archivo es una imagen, la mostramos en lugar de un icono
         $HTML .= ($tipoArchivo == 'imagen')
-            ? '<div class="h-75 mb-2"><img src="../../../' . $linkAcceso . '"></img></div>'
+            ? '<div class="h-75 mb-2"><img src="../../archivos/' . $linkAcceso . '"></img></div>'
             : '<div class="h1 h-75 icono"><i class="fa fa-' . icono_archivo($tipoArchivo) . '"></i></div>';
 
         $HTML .=    '<div class="w-100 titulo" >' . texto_limitado($nombre) . '</div></li>';

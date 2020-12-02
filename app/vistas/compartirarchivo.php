@@ -48,7 +48,6 @@ if ($info == null) {
 // Defino variables para mayor comodidad
 $id = $info['id'];
 $nombre = $info['nombre'];
-$usuario = $info['usuario'];
 $limite = $info['limite'];
 $contraseña = $info['contraseña'];
 $enlace = $info['enlace'];
@@ -77,14 +76,8 @@ echo get_aviso($datos);
 
                         <div class="form-group mt-2 col-sm-6">
                             <h6><label class="" for="usuario">Usuario</label></h6>
-                            <select name="usuario" id="usuario" class="form-control">
-                                <?php
-                                foreach (Usuario::listar() as $user) {
-                                    $selected = ($user->get_id() == $usuario) ? 'selected="selected"' : '';
-                                    echo '<option value="' . $user->get_id() . '" ' . $selected . '>' . $user->get_apellido() . '</option>';
-                                }
-                                ?>
-                            </select>
+                            <div class="border rounded form-control"><b><?php echo $usuario->get_login() ?></b></div>
+                            <input type="hidden" name="usuario" value="<?php echo $usuario->get_id() ?>">
                         </div>
 
                         <div class="form-group mt-2 col-sm-6">
@@ -116,8 +109,9 @@ echo get_aviso($datos);
                             <h6><label class="">Enlace para compartir</label></h6>
                             <div class="border rounded form-control">
                                 <?php if ($enlace != '') { ?>
-                                    <a href="https://localhost/FAI2172-FiDrive/<?php echo $enlace; ?>" target="_blank" id="enlace" class="col col-11 block"><?php echo 'https://localhost/' . $enlace; ?></a>
-                                <?php } else { ?>
+                                    <a href="https://localhost/FAI2172-FiDrive/descargar.php?linkacceso=<?php echo $enlace ?>" target="_blank" id="enlace" class="col col-11 block"><?php echo 'https://localhost/descargar.php?linkacceso=' . $enlace; ?></a>
+                                <?php } else { 
+                                    ?>
                                     <a href="#" target="_blank" id="enlace" class="col col-11 block"></a>
                                 <?php } ?>
                                 <input type="hidden" name="enlace" id="enlace_input" value="">
@@ -167,7 +161,7 @@ echo get_aviso($datos);
                 CryptoJS.MD5(nombreDeArchivo + cantidadDescargas + cantidadDias).toString() :
                 CryptoJS.MD5(nombreDeArchivo + valor).toString();
 
-            $("#enlace").html('<a href="https://localhost/FAI2172-FiDrive/' + hashLink + '" target="_blanck">https://localhost/' + hashLink + '</a>');
+            $("#enlace").html('<a href="https://localhost/FAI2172-FiDrive/descargar.php?linkacceso=' + hashLink + '" target="_blanck">https://localhost/descargar.php?linkacceso=' + hashLink + '</a>');
             $("#enlace_input").val(hashLink);
         });
     });

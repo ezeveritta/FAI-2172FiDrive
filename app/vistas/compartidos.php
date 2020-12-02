@@ -85,19 +85,19 @@ echo get_aviso($datos);
                             </button>
 
                             <div class="dropdown-menu mt-2" aria-labelledby="ordenar" id="ordenarDropdown" style="border-radius: 10px;">
-                                <a href="./compartidos.php?carpeta=<?php echo $ruta; ?>&orden=nombre&direccion=descendente">
+                                <a href="compartidos.php?carpeta=<?php echo $ruta; ?>&orden=nombre&direccion=descendente">
                                     <i class="fa fa-sort-alpha-down ml-2"></i>
                                     Nombre
                                 </a>
-                                <a href="./compartidos.php?carpeta=<?php echo $ruta; ?>&orden=nombre&direccion=ascendente">
+                                <a href="compartidos.php?carpeta=<?php echo $ruta; ?>&orden=nombre&direccion=ascendente">
                                     <i class="fa fa-sort-alpha-down-alt ml-2"></i>
                                     Nombre
                                 </a>
-                                <a href="./compartidos.php?carpeta=<?php echo $ruta; ?>&orden=tamaño&direccion=descendente">
+                                <a href="compartidos.php?carpeta=<?php echo $ruta; ?>&orden=tamaño&direccion=descendente">
                                     <i class="fa fa-sort-amount-up ml-2"></i>
                                     Tamaño
                                 </a>
-                                <a href="./compartidos.php?carpeta=<?php echo $ruta; ?>&orden=tamaño&direccion=ascendente">
+                                <a href="compartidos.php?carpeta=<?php echo $ruta; ?>&orden=tamaño&direccion=ascendente">
                                     <i class="fa fa-sort-amount-down-alt ml-2"></i>
                                     Tamaño
                                 </a>
