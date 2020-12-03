@@ -1,6 +1,6 @@
 <?php
 
-$sitio_titulo = "Contenido - FAI-2172";
+$sitio_titulo = "Login - FAI-2172";
 include_once("estructura/cabecera.php");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -48,7 +48,7 @@ if (SessionControl::validar())
                         <button type="submit" class="btn btn-primary btn-larg w-100">Entrar</button>
 
                         <span class="mt-3 d-block text-center">
-                            ¿No tienes cuenta? <a href="" id="btn_registrar">Registrarse</a>.
+                            ¿No tienes cuenta? <a href="usuario.php" id="btn_registrar">Registrarse</a>.
                         </span>
                     </form>
                 </div>

@@ -119,6 +119,7 @@ class BaseDatos extends PDO
         if (stristr($sql, "select")) {
             $resp =  $this->EjecutarSelect($sql);
         }
+        //echo "<br><hr>$sql";
         return $resp;
     }
 

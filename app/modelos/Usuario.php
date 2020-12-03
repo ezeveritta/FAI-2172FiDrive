@@ -133,8 +133,9 @@ class Usuario
     {
         $bd     = new BaseDatos();
         $output = false;
+        $contraseña = md5($this->get_clave());
         $query  = "INSERT INTO usuario(usnombre, usapellido, uslogin, usclave, usactivo) 
-				   VALUES ('" . $this->get_nombre() . "','" . $this->get_apellido() . "','" . $this->get_login() . "','" . $this->get_clave() . "','" . $this->get_activo() . "')";
+				   VALUES ('" . $this->get_nombre() . "','" . $this->get_apellido() . "','" . $this->get_login() . "','" . $contraseña . "'," . $this->get_activo() . ")";
 
         // Iniciamos conexión
         if ($bd->Iniciar()) {

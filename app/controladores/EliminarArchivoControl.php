@@ -19,14 +19,8 @@ class EliminarArchivoControl
      */
     public function validar($datos)
     {
-        if (!isset($datos['usuario']) || !isset($datos['motivo']) || !isset($datos['idArchivoCargado'])) {
-            $this->set_error('Uno ó más datos no se cargaron correctamente.');
-            return false;
-        }
-
-        // Valido que el campo usuario esté seleccionado
-        if (strlen($datos['usuario']) == 0) {
-            $this->set_error('El campo "usuario" debe ser seleccionado.');
+        if (!isset($datos['motivo']) || !isset($datos['idArchivoCargado'])) {
+            $this->set_error('Uno ó más datos del formularios incorrectos.');
             return false;
         }
 
@@ -46,7 +40,6 @@ class EliminarArchivoControl
         // Definimos las variables para un uso mas cómodo
         $idArchivoCargado       = $datos['idArchivoCargado'];
         $idArchivoCargadoEstado = $datos['idArchivoCargadoEstado'];
-        $usuario     = $datos['usuario'];
         $descripcion = $datos['motivo'];
         $archivo     = $datos['archivo'];
 
@@ -65,7 +58,7 @@ class EliminarArchivoControl
         // Actualizamos archivocargadoestado
         $ArchivoCargadoEstado->set_estadoTipos('4');
         $ArchivoCargadoEstado->set_descripcion($descripcion);
-        $ArchivoCargadoEstado->set_usuario($usuario);
+        
         if (!$ArchivoCargadoEstado->modificar()) {
             $this->set_error($ArchivoCargadoEstado->get_error());
             return false;
