@@ -19,16 +19,9 @@ class CompartirArchivoControl
      */
     public function validar($datos)
     {
-        if(!isset($datos['usuario']) || !isset($datos['vencimiento']) || !isset($datos['limite']))
+        if( !isset($datos['vencimiento']) || !isset($datos['limite']) || !isset($datos['enlace']))
         {
             $this->set_error('Uno ó más datos no se cargaron correctamente.');
-            return false;
-        }
-        
-        // Valido que el campo usuario esté seleccionado
-        if (strlen($datos['usuario']) == 0)
-        {
-            $this->set_error('El campo "usuario" debe ser seleccionado.');
             return false;
         }
         
@@ -68,6 +61,7 @@ class CompartirArchivoControl
         $respaldo_ArchivoCargado = $ArchivoCargado;
 
         // Actualizamos la información del modelo ArchivoCargado
+        $ArchivoCargado->set_linkAcceso($enlace);
         $ArchivoCargado->set_cantidadDescarga($limite);
         $ArchivoCargado->set_fechaInicioCompartir($fechaInicio->format("Y-m-d H:i:s"));
         $ArchivoCargado->set_fechaFinCompartir($fechaFin->format("Y-m-d H:i:s"));

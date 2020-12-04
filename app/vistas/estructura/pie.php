@@ -1,37 +1,31 @@
-        </div>
+<?php
+
+# Cargo pie de página
+if ($CONFIG["pie"])
+{ 
+?>
+
+  <!-- Pie de Página -->
+  <footer class="footer bg-white p-2 d-block">
+    <div class="container text-center">
+      <span class="text-muted">Este es el Pie</span>
     </div>
+  </footer>
 
-    <!-- Pie de Página -->
-    <footer class="footer bg-white p-2">
-      <div class="container text-center">
-        <span class="text-muted">Este es el Pie</span>
-      </div>
-    </footer>
-    
-    
-    <!-- Bootstrap -->
-    <script src="../../publico/js/validator.js"></script>
+<?php 
+} 
 
-    <script>
-    $(document).ready(function(){
+# Validación
+if ($CONFIG["validator"][0])
+{ 
+?>
 
-        // Cambiar uso del input "contraseña"
+  <!-- Validator -->
+  <script src="../../publico/js/validator-<?php echo $CONFIG["validator"][1] ?>.js"></script>
 
-        $("#proteger").click(function(){
-          
-            if(!this.checked)
-            {
-              $("#contraseña").attr('disabled', 'disabled');
-            } else{
-              $("#contraseña").removeAttr('disabled');
-            }
-        });
+<?php 
+} 
+?>
 
-        // Integrar editor texto summernote
-        $('#descripcion').summernote({
-          airMode: true
-        });
-      });
-    </script>
 </body>
 </html>

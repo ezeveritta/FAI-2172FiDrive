@@ -72,15 +72,8 @@ echo get_aviso($datos);
 
                         <div class="form-group mt-2 col-sm-12">
                             <h6><label class="" for="usuario">Usuario</label></h6>
-                            <select name="usuario" id="usuario" class="form-control">
-                                <?php
-                                foreach (Usuario::listar() as $user) {
-                                    $selected = ($user->get_id() == $usuario) ? 'selected="selected"' : '';
-                                    echo '<option value="' . $user->get_id() . '" ' . $selected . '>' . $user->get_apellido() . '</option>';
-                                }
-                                ?>
-                            </select>
-                            <div class="invalid-feedback"></div>
+                            <div class="border rounded form-control"><b><?php echo $usuario->get_login() ?></b></div>
+                            <input type="hidden" name="usuario" value="<?php echo $usuario->get_id() ?>">
                         </div>
 
                         <div class="form-group mt-2 col-sm-12">

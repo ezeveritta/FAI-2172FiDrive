@@ -71,9 +71,9 @@ class AmarchivoControl
      */
     public function cargar($datos, $archivo)
     {
-        // Creamos el obj modelo y seteamos los datos
+        # Creamos el obj modelo y seteamos los datos
         $ArchivoCargado = new ArchivoCargado();
-        $ArchivoCargado->cargar($datos["nombre"], $datos["descripcion"], $datos["icono"], $datos["ruta"] . '/' . $datos["nombre"], '0', '0', '', '', '', $datos["usuario"]);
+        $ArchivoCargado->cargar($datos["ruta"] . '/' . $datos["nombre"], $datos["descripcion"], $datos["icono"], '', '0', '0', '', '', '', $datos["usuario"]);
 
         // Cargamos los datos a la tabla archivocargado
         if (!$ArchivoCargado->insertar()) {

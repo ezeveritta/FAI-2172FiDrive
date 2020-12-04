@@ -1,8 +1,22 @@
 <?php
 
-$sitio_titulo = "Contenido - FAI-2172";
+# Configuración de la página
+include_once("../../configuracion.php");
+$CONFIG["titulo"] = "ABM Usuario - FAI-2172";
+
+# Cargo contenido
 include_once("estructura/cabecera.php");
+
+# Verifico si hay una sesión logeada
+if (!$logueado)
+{
+    header('Location: login.php');
+    die();
+}
+
+# Cargo contenido
 include_once("../controladores/AbmusuarioControl.php");
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -14,79 +28,73 @@ include_once("../controladores/AbmusuarioControl.php");
 ////////// modificación a los demás usuarios..
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
 # Verifico si hay una sesión logeada
-if (!$loggeado || !$esAdmin)
+if (!$esAdmin)
 {
-    header('Location: login.php');
+    header('Location: compartidos.php?aviso=No+tienes+permiso.');
     die();
 }
 
 # obtengo info de los usuarios
 $arreglo_Usuarios = AbmusuarioControl::get_info();
 ?>
-<!-- Contenido -->
-<div class="col-md-10 col-xs-12">
-    <div class="row h-100">
-        <div class="col-sm-12 my-3">
-            <?php if (($arreglo_Usuarios) == false) {
-                echo "<h2>Error al consultar la base de datos.</h2>";
-            } else { ?>
-            <table class="table table-sm table-striped border">
 
-                <thead>
-                    <tr>
-                        <th scope="col">id</th>
-                        <th scope="col">Nombre</th>
-                        <th scope="col">Apellido</th>
-                        <th scope="col">Login</th>
-                        <th scope="col">Activo</th>
-                        <th scope="col">Editar</th>
-                        <th scope="col">Rol</th>
-                    </tr>
-                </thead>
+        <!-- Contenido -->
+        <div class="col-md-10 col-xs-12">
+            <div class="row h-100">
+                <div class="col-sm-12 my-3">
+                    <?php if (($arreglo_Usuarios) == false) {
+                        echo "<h2>Error al consultar la base de datos.</h2>";
+                    } else { ?>
+                    <table class="table table-sm table-striped border">
 
-                <tbody>
-                    <?php
+                        <thead>
+                            <tr>
+                                <th scope="col">id</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Apellido</th>
+                                <th scope="col">Login</th>
+                                <th scope="col">Activo</th>
+                                <th scope="col">Editar</th>
+                                <th scope="col">Rol</th>
+                            </tr>
+                        </thead>
 
-                    foreach ($arreglo_Usuarios as $usuario)
-                    {
-                        
-                        $rol_admin   = ($usuario["rol_admin"]) ? 'checked="enabled"' : '';
-                        $rol_usuario = ($usuario["rol_usuario"]) ? 'checked="enabled"' : '';
-                        $rol_otro    = ($usuario["rol_otro"]) ? 'checked="enabled"' : '';
-                        echo "<tr>
-                                <th scope=\"row\">{$usuario["id"]}</th>
-                                <td>{$usuario["nombre"]}</td>
-                                <td>{$usuario["apellido"]}</td>
-                                <td>{$usuario["login"]}</td>
-                                <td>{$usuario["activo"]}</td>
-                                <td><a href=\"#\">editar</a></td>
-                                <td>
-                                    <label><input type=\"checkbox\" class=\"editar_rol_admin\" $rol_admin> Administrador </label>
-                                    <label><input type=\"checkbox\" class=\"editar_rol_usuario\" $rol_usuario> Usuario </label>
-                                    <label><input type=\"checkbox\" class=\"editar_rol_otro\" $rol_otro> Otro </label>
-                                </td>
-                            </tr>";
-                    }
-                    ?>
+                        <tbody>
+                            <?php
 
-                </tbody>
-            </table>
-            <?php }?>
-            
+                            foreach ($arreglo_Usuarios as $usuario)
+                            {
+                                
+                                $rol_admin   = ($usuario["rol_admin"]) ? 'checked="enabled"' : '';
+                                $rol_usuario = ($usuario["rol_usuario"]) ? 'checked="enabled"' : '';
+                                $rol_otro    = ($usuario["rol_otro"]) ? 'checked="enabled"' : '';
+                                echo "<tr>
+                                        <th scope=\"row\">{$usuario["id"]}</th>
+                                        <td>{$usuario["nombre"]}</td>
+                                        <td>{$usuario["apellido"]}</td>
+                                        <td>{$usuario["login"]}</td>
+                                        <td>{$usuario["activo"]}</td>
+                                        <td><a href=\"#\">editar</a></td>
+                                        <td>
+                                            <label><input type=\"checkbox\" class=\"editar_rol_admin\" $rol_admin> Administrador </label>
+                                            <label><input type=\"checkbox\" class=\"editar_rol_usuario\" $rol_usuario> Usuario </label>
+                                            <label><input type=\"checkbox\" class=\"editar_rol_otro\" $rol_otro> Otro </label>
+                                        </td>
+                                    </tr>";
+                            }
+                            ?>
+
+                        </tbody>
+                    </table>
+                    <?php }?>
+                    
+                </div>
+            </div>
         </div>
+
     </div>
 </div>
-
-
-<style> 
-
-</style>
-
-<script>
-
-</script>
 
 <?php
 include_once("estructura/pie.php");

@@ -31,14 +31,14 @@ $session = new SessionControl();
 // Verifico si hay una sesión activa
 if ($session->validar())
 {
-    header('Location: ../contenido.php');
+    header('Location: ../compartidos.php');
     die();
 }
 
 // Valido los datos en la BD
 if ($session->entrar($datos['usuario'], $datos['contraseña']))
 {
-    header('Location: ../contenido.php');
+    header('Location: ../compartidos.php');
     die();
 
 }

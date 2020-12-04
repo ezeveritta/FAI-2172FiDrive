@@ -148,12 +148,13 @@ class CompartidosControl
     public static function html_archivo($id, $archivo)
     {
         $HTML = '';
-        $linkAcceso       = $archivo->get_archivoCargado()->get_linkAcceso();
+        $nombre       = $archivo->get_archivoCargado()->get_nombre();
+        $linkAcceso   = $archivo->get_archivoCargado()->get_linkAcceso();
         $idArchivoCargado = $archivo->get_archivoCargado()->get_id();
         $nombre           = $archivo->get_archivoCargado()->get_nombre();
 
         // Obtenemos el tipo de archivo para mostrar el icono que le corresponde
-        $extension   = pathinfo("$linkAcceso")["extension"];
+        $extension   = pathinfo("$nombre")["extension"];
         $tipoArchivo = tipo_archivo($extension);
 
         // Escribimos el HTML// custom-folder
@@ -161,11 +162,11 @@ class CompartidosControl
 
         $HTML .= '<div class="dropdown opciones" style="right: -5px; top: 3px; position: absolute; display: none;">
                             <button type="button" class="float-right btn bg-transparent" id="item_' . $id . '_opciones" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fa fa-ellipsis-v text-center w-100"></i>
+                                <i class="fa fa-ellipsis-v text-center" style="margin-right: -3px"></i>
                             </button>
                             <div class="dropdown-menu" aria-labelledby="item_' . $id . '_opciones">
                                 <div class="dropdown-item abrir">
-                                    <a href="../../archivos/' . $linkAcceso . '" target="_blanck" class="btn bg-transparent btn-abrir">
+                                    <a href="descargar.php?linkacceso='.$linkAcceso.'" target="_blanck" class="btn bg-transparent btn-abrir">
                                         <i class="fa fa-download text-muted"></i>
                                         Descargar
                                     </a>
@@ -202,10 +203,10 @@ class CompartidosControl
 
         // Si el archivo es una imagen, la mostramos en lugar de un icono
         $HTML .= ($tipoArchivo == 'imagen')
-            ? '<div class="h-75 mb-2"><img src="../../archivos/' . $linkAcceso . '"></img></div>'
+            ? '<div class="h-75 mb-2"><img src="../../archivos/' . $nombre . '"></img></div>'
             : '<div class="h1 h-75 icono"><i class="fa fa-' . icono_archivo($tipoArchivo) . '"></i></div>';
 
-        $HTML .=    '<div class="w-100 titulo" >' . texto_limitado($nombre) . '</div></li>';
+        $HTML .=    '<div class="w-100 titulo" >' . texto_limitado( nombreArchivo($nombre) ) . '</div></li>';
 
         return $HTML;
     }

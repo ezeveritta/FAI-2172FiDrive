@@ -20,12 +20,12 @@ include_once("../modelos/Rol.php");
 $session = new SessionControl();
 
 $esAdmin  = false;
-$loggeado = false;
+$logueado = false;
 
 # Si está logeado, obtengo la información principal del usuario
 if ($session->validar())
 {
-    $loggeado = true;
+    $logueado = true;
     // Datos del usuario
     $idusuario  = $session->get_idUsuario();
     $usuario    = $session->get_usuario();
@@ -40,7 +40,7 @@ if ($session->validar())
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?PHP echo $sitio_titulo ?></title>
+    <title><?PHP echo $CONFIG["titulo"] ?></title>
 
     <!-- Dependencias -->
     <script src="../../publico/js/jquery/jquery-3.5.1.min.js"></script>
@@ -57,31 +57,43 @@ if ($session->validar())
     <link rel="stylesheet" href="../../publico/css/iconos/all.min.css">
 
     <!-- Fuentes -->
-    <link rel="stylesheet" href="../../publico/css/fonts/Satisfy-Regular.css">
     <style>
+        .text-SansiteSwashed {
+            font-size: 1.3em;
+            font-family: SansitaSwashed;
+        }
         @font-face {
-            font-family: Satisfy;
-            src: '../../publico/css/fuentes/Satisfy-Regular.ttf';
+            font-family: SansitaSwashed;
+            src: url('../../publico/css/fuentes/SansitaSwashed-Medium.ttf');
         }
     </style>
 
-    <!-- include summernote css/js -->
-    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+    <?php
+    if ($CONFIG['extensiones']['summernote']) 
+    { ?>
+        <!-- include summernote css/js -->
+        <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+    <?php
+    } 
+    ?>
 
 </head>
 
 <body style="height: 100vh">
 
-    <!-- Cabecera -->
+    <?php
+    # Cargo cabecera
+    if ($CONFIG["cabecera"]) { ?>
+
     <div class="navbar navbar-light bg-white flex-md-nowrap p-1 text-light" style="box-shadow: 3px 0px 8px rgba(0,0,0,0.1)">
         <div class="w-100 d-flex justify-content-between">
             <div class="">
-                <h5 class="ml-5 pt-2"><a href="../contenido" class="text-muted" style="font-family: Satisfy">FiDrive</a></h5>
+                <h5 class="ml-5 pt-2"><a href="login.php" class="text-muted" style="font-family: SansitaSwashed">FiDrive</a></h5>
             </div>
             <div class="mr-3 pt-2">
                 <?php
-                if ($loggeado)
+                if ($logueado)
                 {
                     if ($esAdmin)
                     {
@@ -139,8 +151,16 @@ if ($session->validar())
             </div>
         </div>
     </div>
+    <?php } ?>
+
+    <!-- Contenido -->
+    <div class="container-fluid mt-3" id="master" style="border-radius: 15px; border: 1px solid #ddd; width: calc(100% - 40px); height: auto!important; min-height: 85vh;">
+        <div class="row" style="height: auto; min-height: 80vh;">
 
     <?php
-    include_once("../../configuracion.php");
-    include_once("menu.php");
+    # Cargo menú lateral
+    if ($CONFIG["menu"]) 
+    {
+        include_once("menu.php");
+    }
     ?>

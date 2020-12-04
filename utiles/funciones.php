@@ -76,6 +76,17 @@ function limpiarRuta($string)
 }
 
 /**
+ * Ésta función obtiene el nombre de un archivo según su path
+ * @param string $path
+ * @return string
+ */
+function nombreArchivo(string $path)
+{
+	$archivo = pathinfo($path); 
+	return $archivo['basename'];
+}
+
+/**
  * Ésta función acorta un string para que no sobrepase el tamaño de su contenedor html
  * @param string $string Texto a acortar
  * @return string
