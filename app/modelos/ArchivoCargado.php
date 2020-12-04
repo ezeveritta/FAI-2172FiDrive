@@ -64,14 +64,16 @@ class ArchivoCargado
      * 
      * @return boolean
      */
-    public function buscar($valor, $where = 'idarchivocargado')
+    public function buscar($valor = '', $where = '')
     {
         $bd = new BaseDatos();
-        if ($where != 'idarchivocargado') {
-            $query = "SELECT * from archivocargado  where " . $where . " ='" . $valor . "'";
-        } else {
-            $query = "SELECT * from archivocargado  where " . $where . " =" . $valor;
-        }
+        $query = "SELECT * from archivocargado ";
+
+        if ($where != '')
+            $query .= "WHERE $where";
+        if ($valor != '')
+            $query .= "WHERE idarchivocargado=$valor";
+
         $output = false;
 
         // Inicio conexión con bd

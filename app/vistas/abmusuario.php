@@ -14,6 +14,13 @@ if (!$logueado)
     die();
 }
 
+# Verifico si hay una sesión logeada
+if (!$esAdmin)
+{
+    header('Location: compartidos.php?aviso=No+tienes+permiso.');
+    die();
+}
+
 # Cargo contenido
 include_once("../controladores/AbmusuarioControl.php");
 
@@ -27,13 +34,6 @@ include_once("../controladores/AbmusuarioControl.php");
 ////////// Vista donde el usuario con permiso de 'administrador' puede dar de alta, baja o
 ////////// modificación a los demás usuarios..
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-# Verifico si hay una sesión logeada
-if (!$esAdmin)
-{
-    header('Location: compartidos.php?aviso=No+tienes+permiso.');
-    die();
-}
 
 # obtengo info de los usuarios
 $arreglo_Usuarios = AbmusuarioControl::get_info();

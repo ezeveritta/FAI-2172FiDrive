@@ -40,7 +40,6 @@ if ($session->entrar($datos['usuario'], $datos['contraseña']))
 {
     header('Location: ../compartidos.php');
     die();
-
 }
 
 // No se logró iniciar session, vuelvo a login.php
