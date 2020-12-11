@@ -112,24 +112,10 @@ class EliminarArchivoControl
             }
         }
 
-        // Si busco por ruta
-        else {
-            // Busco registro en la tabla archivocargado donde aclinkacceso es igual a la ruta pasada por parámetro
-            if (!$ArchivoCargado->buscar($datos['archivo'], 'aclinkacceso')) {
-                $this->set_error("No se encontró un registro del archivo: {$datos['archivo']}");
-                return false;
-            }
-
-            // Busco registro en la tabla archivocargadoestado con el id encontrado previamente
-            if (!$ArchivoCargadoEstado->buscar($ArchivoCargado->get_id())) {
-                $this->set_error("No se encontró un registro perteneciente al id: {$ArchivoCargado->get_id()}");
-                return false;
-            }
-        }
-
         // Si llegamos a éste punto, la operación fue exitosa
         // Completo el arreglo a retornar
         $arreglo['nombre'] = $ArchivoCargado->get_nombre();
+        $arreglo['usuario'] = $ArchivoCargadoEstado->get_usuario()->get_login();
         $arreglo['idArchivoCargado'] = $ArchivoCargado->get_id();
         $arreglo['idArchivoCargadoEstado'] = $ArchivoCargadoEstado->get_id();
         $arreglo['archivo'] = $ArchivoCargado->get_linkAcceso();

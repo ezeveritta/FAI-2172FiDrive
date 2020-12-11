@@ -16,7 +16,8 @@ $CONFIG = [
     "pie"           => true,
     "validator"     => [false, ""],
     "extensiones"   => [
-        "summernote" => false
+        "summernote" => false,
+        "md5"        => false
     ]
 ];
 

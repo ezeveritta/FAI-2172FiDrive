@@ -53,7 +53,7 @@ switch ($datos['accion'])
     case 'Modificar':
 
         // Validamos
-        if (!$control->validar($datos, false)) {
+        if (!$control->validar($datos)) {
             header( "Location: ../amarchivo.php?id={$datos['id']}&error={$control->get_error()}" );
             die;
         }

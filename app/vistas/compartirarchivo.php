@@ -1,23 +1,15 @@
 <?php
 # Configuración de la página
 include_once("../../configuracion.php");
-$CONFIG["titulo"] = "Compartir Archivo - FAI-2172";
+include_once("../../utiles/session.php");
+$datos = data_submitted();
 
-# Cargo contenido
-include_once("estructura/cabecera.php");
-
-# Verifico si hay una sesión logeada
-if (!$logueado)
-{
-    header('Location: login.php');
-    die();
-}
-
-# Cargo contenido
+# Cargo clases a utilizar
 include_once("../modelos/EstadoTipos.php");
 include_once("../modelos/ArchivoCargado.php");
 include_once("../modelos/ArchivoCargadoEstado.php");
 include_once("../controladores/CompartirArchivoControl.php");
+$control = new CompartirArchivoControl();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -28,40 +20,45 @@ include_once("../controladores/CompartirArchivoControl.php");
 ////////// Vista donde el usuario puede compartir un archivo
 ////////// 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Verifico acceso a la vista //////////////////////////////////////////////////////////////////////
+if (!$logueado)
+{
+    header('Location: login.php');
+    die();
+}
 
-// Obtengo datos
-$datos = data_submitted();
-
-$control = new CompartirArchivoControl();
-
-// Si no hay identificador del archivo, vuelvo a la vista "contenido"
+# Si no hay identificador del archivo, vuelvo a la vista "compartidos"
 if ( !isset($datos['id']) ) {
-    header( "Location: ../compartidos.php?error=Se esperaba un identificador." );
+    header( "Location: compartidos.php?error=Se esperaba un identificador." );
     die;
 }
 
-// Obtengo la información que se usará en la página
-$info = $control->get_info($datos);
-
-// Verifico que se encontró un registro en la BD
-if ($info == null) {
-    header( "Location: ../compartidos.php?error={$control->get_error()}" );
+# Verifico que se encontró un registro en la BD
+if (null === $info = $control->get_info($datos)) {
+    header( "Location: compartidos.php?error={$control->get_error()}" );
     die;
 }
 
-// Defino variables para mayor comodidad
+# Defino variables para mayor comodidad
 $id          = $info['id'];
 $nombre      = nombreArchivo($info['nombre']);
+$user        = $info['usuario'];
 $limite      = $info['limite'];
 $contraseña  = $info['contraseña'];
 $enlace      = $info['enlace'];
 $date        = new DateTime($info['fechaFin']);
 $vencimiento = ($info['fechaFin'] != '0000-00-00 00:00:00') ? $date->diff(new DateTime('now'))->format("%d") : '0';
 
-// Errores, alertas, exitos
+# Configuración de la vista
+$CONFIG["titulo"] = "Compartir Archivo - FAI-2172";
+$CONFIG["extensiones"]["md5"] = true;
+
+# Inicio HTML
+include_once("estructura/cabecera.php");
+
+# Elemento 'alerta'
 echo get_aviso($datos);
 ?>
-
         <!-- Contenido -->
         <div class="col-md-10">
             <div class="row h-100">
@@ -79,7 +76,7 @@ echo get_aviso($datos);
 
                                 <div class="form-group mt-2 col-sm-6">
                                     <h6><label class="" for="usuario">Usuario</label></h6>
-                                    <div class="border rounded form-control"><b><?php echo $usuario->get_login() ?></b></div>
+                                    <div class="border rounded form-control"><b><?php echo $user ?></b></div>
                                     <input type="hidden" name="usuario" value="<?php echo $usuario->get_id() ?>">
                                 </div>
 
@@ -166,7 +163,7 @@ echo get_aviso($datos);
                 CryptoJS.MD5(nombreDeArchivo + cantidadDescargas + cantidadDias).toString() :
                 CryptoJS.MD5(nombreDeArchivo + valor).toString();
 
-            $("#enlace").html('<a href="https://localhost/FAI2172-FiDrive/descargar.php?linkacceso=' + hashLink + '" target="_blanck">https://localhost/descargar.php?linkacceso=' + hashLink + '</a>');
+            $("#enlace").html('<a href="https://localhost/FAI2172-FiDrive/app/vistas/descargar.php?linkacceso=' + hashLink + '" target="_blanck">https://localhost/descargar.php?linkacceso=' + hashLink + '</a>');
             $("#enlace_input").val(hashLink);
         });
     });
@@ -192,7 +189,6 @@ echo get_aviso($datos);
       });
 </script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
 
 <?php
 include_once("estructura/pie.php");

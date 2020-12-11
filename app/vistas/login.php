@@ -2,13 +2,7 @@
 
 # Configuración de la página
 include_once("../../configuracion.php");
-$CONFIG["titulo"] = "Login - FAI-2172";
-$CONFIG["cabecera"] = false;
-$CONFIG["menu"] = false;
-$CONFIG["pie"] = false;
-
-# Cargo contenido
-include_once("estructura/cabecera.php");
+include_once("../../utiles/session.php");
 
 # Verifico si hay una sesión logeada
 if ($logueado)
@@ -16,7 +10,6 @@ if ($logueado)
     header('Location: compartidos.php');
     die();
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -27,6 +20,15 @@ if ($logueado)
 ////////// Vista donde el cliente accede cuando aún no inició sesión.
 ////////// 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+# Configuración de la vista
+$CONFIG["titulo"] = "Login - FAI-2172";
+$CONFIG["cabecera"] = false;
+$CONFIG["menu"] = false;
+$CONFIG["pie"] = false;
+
+# Inicio HTML
+include_once("estructura/cabecera.php");
 
 ?>
 

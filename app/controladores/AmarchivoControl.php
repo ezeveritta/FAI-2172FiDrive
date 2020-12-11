@@ -83,7 +83,7 @@ class AmarchivoControl
 
         // Creamos el obj modelo y seteamos los datos
         $ArchivoCargadoEstado = new ArchivoCargadoEstado();
-        $ArchivoCargadoEstado->cargar('Archivo recien cargado, aún no compartido.', '', '', '1', '1', $ArchivoCargado->get_id());
+        $ArchivoCargadoEstado->cargar('Archivo recien cargado, aún no compartido.', '', '', '1', $datos["usuario"], $ArchivoCargado->get_id());
 
         // Cargamos los datos a la tabla archivocargadoestado
         if (!$ArchivoCargadoEstado->insertar()) {
@@ -126,13 +126,12 @@ class AmarchivoControl
         }
 
         // Seteamos nuevos datos
-        $linkViejo = $ArchivoCargado->get_linkAcceso();
-        $linkNuevo = dirname($datos["ruta"]) . '/' . $datos["nombre"];
+        $linkViejo = $ArchivoCargado->get_nombre();
+        $linkNuevo = $datos["ruta"] . '/' . $datos["nombre"];
         $ArchivoCargado->set_descripcion($datos['descripcion']);
         $ArchivoCargado->set_usuario($datos['usuario']);
         $ArchivoCargado->set_icono($datos['icono']);
-        $ArchivoCargado->set_nombre($datos['nombre']);
-        $ArchivoCargado->set_linkAcceso($linkNuevo);
+        $ArchivoCargado->set_nombre($linkNuevo);
 
         // Modificamos el archivo local
         if (!rename('../../../archivos/' . $linkViejo, '../../../archivos/' . $linkNuevo)) {
@@ -161,10 +160,10 @@ class AmarchivoControl
      */
     public function get_info($datos, $idUsuario)
     {
-        // Modelos a usar
+        # Modelos a usar
         $ArchivoCargado = new ArchivoCargado();
 
-        // Arreglo base a retornar
+        # Arreglo base a retornar
         $arreglo = array(
             'nombre' => "1234.png",
             'descripcion' => "<b>E</b>sta es una descripción genérica, si lo necesita la puede <i>cambiar</i>.",
@@ -174,21 +173,19 @@ class AmarchivoControl
             'id' => null
         );
 
-        // Si la página se cargó sin parámetros
+        # Si la página se cargó sin parámetros
         if (count($datos) == 0) {
-            if (isset($datos['ruta']))
-                $arreglo['ruta'] = $datos['ruta'];
             return $arreglo;
         }
 
-        // Si está el parámetro 'clave' y 'ruta' (venimos de 'contenido')
+        # Si está el parámetro 'clave' y 'ruta' (venimos de 'contenido/compartidos')
         if (isset($datos['clave'])) {
             if (isset($datos['ruta']))
                 $arreglo['ruta'] = $datos['ruta'];
             return $arreglo;
         }
 
-        // SI busco por ID
+        # Si busco por ID
         if (isset($datos['id'])) {
             // Busco registro en la tabla 'archivocargadoestado'
             if (!$ArchivoCargado->buscar($datos['id'])) {
@@ -197,11 +194,11 @@ class AmarchivoControl
             }
         }
 
-        $arreglo['nombre'] = $ArchivoCargado->get_nombre();
+        $arreglo['nombre'] = nombreArchivo($ArchivoCargado->get_nombre());
         $arreglo['descripcion'] = $ArchivoCargado->get_descripcion();
         $arreglo['icono'] = $ArchivoCargado->get_icono();
         $arreglo['clave'] = 1;
-        $arreglo['ruta'] = $ArchivoCargado->get_linkAcceso();
+        $arreglo['ruta'] = rutaArchivo($ArchivoCargado->get_nombre());
         $arreglo['id'] = $ArchivoCargado->get_id();
 
         return $arreglo;

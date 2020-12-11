@@ -1,12 +1,5 @@
 <?php
 
-include_once('../controladores/SessionControl.php');
-include_once('../../utiles/funciones.php');
-include_once("../modelos/BaseDatos.php");
-include_once("../modelos/Usuario.php");
-include_once("../modelos/UsuarioRol.php");
-include_once("../modelos/Rol.php");
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ///// PHP - cabecera
@@ -17,21 +10,6 @@ include_once("../modelos/Rol.php");
 ////////// 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-$session = new SessionControl();
-
-$esAdmin  = false;
-$logueado = false;
-
-# Si está logeado, obtengo la información principal del usuario
-if ($session->validar())
-{
-    $logueado = true;
-    // Datos del usuario
-    $idusuario  = $session->get_idUsuario();
-    $usuario    = $session->get_usuario();
-    //$rol        = $session->get_rol();
-    $esAdmin    = $session->esAdministrador();
-}
 ?>
 
 <!DOCTYPE html>

@@ -1,17 +1,15 @@
 <?php
-
 # Configuración de la página
 include_once("../../configuracion.php");
-$CONFIG["titulo"] = "Descargar Archivo - FAI-2172";
-$CONFIG["menu"] = false;
-$CONFIG["pie"] = false;
+include_once("../../utiles/session.php");
+$datos = data_submitted();
 
 # Cargo contenido
-include_once("estructura/cabecera.php");
 include_once("../modelos/EstadoTipos.php");
 include_once("../modelos/ArchivoCargado.php");
 include_once("../modelos/ArchivoCargadoEstado.php");
 include_once("../controladores/DescargaControl.php");
+$control = new DescargaControl();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -23,18 +21,23 @@ include_once("../controladores/DescargaControl.php");
 ////////// 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-# obtengo data de POST/GET
-$datos = data_submitted();
-
 if (isset($datos['linkacceso']))
 {
-    $control = new DescargaControl();
     $habilitado = false;
 
     # obtengo información a mostrar
     $habilitado = $control->info($datos['linkacceso']);
     $info = $control->get_info();
 }
+
+# Configuración de la vista
+$CONFIG["titulo"] = "Descargar Archivo - FAI-2172";
+$CONFIG["menu"] = false;
+$CONFIG["pie"] = false;
+
+# Inicio HTML
+include_once("estructura/cabecera.php");
+echo get_aviso($datos); 
 ?>
 
         <!-- Contenido -->

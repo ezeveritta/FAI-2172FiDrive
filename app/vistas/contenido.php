@@ -1,8 +1,12 @@
 <?php
+# Configuración de la página
+include_once("../../configuracion.php");
+include_once("../../utiles/session.php");
+$datos = data_submitted();
 
-$sitio_titulo = "Contenido - FAI-2172";
-include_once("estructura/cabecera.php");
+# Cargo contenido
 include_once("../controladores/ContenidoControl.php");
+$control = new ContenidoControl();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -13,37 +17,34 @@ include_once("../controladores/ContenidoControl.php");
 ////////// Vista donde el usuario vé los archivos que cargó
 ////////// 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-$control = new ContenidoControl();
-
-// Verifico si el cliente está logeado
-if (!SessionControl::validar())
+// Verifico acceso a la vista //////////////////////////////////////////////////////////////////////
+if (!$logueado)
 {
     header('Location: login.php');
     die();
 }
 
-// Datos de Get&Post
-$datos = data_submitted();
-
-// Carpeta Actual
+# Carpeta Actual
 $ruta = (isset($datos['carpeta'])) ? limpiarRuta($datos['carpeta']) : 'archivos';
 
 
-// Obtengo un array de contenido ["carpetas", "archivos"]
+# Obtengo un array de contenido ["carpetas", "archivos"]
 $contenido = $control->abrirDirectorio($ruta);
 if ($contenido === false) {
     header('Location: ./contenido.php?error=Directorio no encontrado.');
     die();
 }
 
-// Reordeno el contenido
+# Reordeno el contenido
 if (isset($datos['orden']) &&  isset($datos['direccion']))
     $contenido = $control->ordenarContenido($ruta, $contenido, $datos['orden'], $datos['direccion']);
 
 
-// Inicio HTML
+# Configuración de la vista
+$CONFIG["titulo"] = "Contenido - FAI-2172";
+
+# Inicio HTML
+include_once("estructura/cabecera.php");
 echo get_aviso($datos); 
 ?>
 <!-- Contenido -->

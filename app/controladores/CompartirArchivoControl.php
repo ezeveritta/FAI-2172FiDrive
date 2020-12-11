@@ -151,7 +151,7 @@ class CompartirArchivoControl
         // Completo el arreglo a retornar
         $arreglo['id'] = $ArchivoCargado->get_id();
         $arreglo['nombre'] = $ArchivoCargado->get_nombre();
-        $arreglo['usuario'] = $ArchivoCargadoEstado->get_usuario()->get_id();
+        $arreglo['usuario'] = $ArchivoCargadoEstado->get_usuario()->get_login();
         $arreglo['contraseña'] = $ArchivoCargado->get_protegidoClave();
         $arreglo['limite'] = $ArchivoCargado->get_cantidadDescarga();
         $arreglo['enlace'] = $ArchivoCargado->get_linkAcceso();

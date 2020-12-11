@@ -1,13 +1,22 @@
 <?php
-
 # Configuración de la página
 include_once("../../configuracion.php");
-$CONFIG["titulo"] = "ABM Usuario - FAI-2172";
+include_once("../../utiles/session.php");
+$datos = data_submitted();
 
-# Cargo contenido
-include_once("estructura/cabecera.php");
+# Cargo clases a utilizar
+include_once("../controladores/AbmusuarioControl.php");
 
-# Verifico si hay una sesión logeada
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+///// PHP - abmusuario
+///// File: /app/vistas/abmusuario.php
+///// Date: 02/12/2020 - 16:11
+///// Description:
+////////// Vista donde el usuario con permiso de 'administrador' puede dar de alta, baja o
+////////// modificación a los demás usuarios..
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Verifico acceso a la vista //////////////////////////////////////////////////////////////////////
 if (!$logueado)
 {
     header('Location: login.php');
@@ -21,22 +30,15 @@ if (!$esAdmin)
     die();
 }
 
-# Cargo contenido
-include_once("../controladores/AbmusuarioControl.php");
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////
-///// PHP - abmusuario
-///// File: /app/vistas/abmusuario.php
-///// Date: 02/12/2020 - 16:11
-///// Description:
-////////// Vista donde el usuario con permiso de 'administrador' puede dar de alta, baja o
-////////// modificación a los demás usuarios..
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 # obtengo info de los usuarios
 $arreglo_Usuarios = AbmusuarioControl::get_info();
+
+# Configuración de la vista
+$CONFIG["titulo"] = "ABM Usuario - FAI-2172";
+
+# Inicio HTML
+include_once("estructura/cabecera.php");
+echo get_aviso($datos); 
 ?>
 
         <!-- Contenido -->

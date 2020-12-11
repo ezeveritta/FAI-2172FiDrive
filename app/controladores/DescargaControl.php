@@ -47,6 +47,7 @@ class DescargaControl
             "path" => $ArchivoCargado->get_nombre(),
             "estadoTipo" => $ArchivoCargadoEstado->get_estadoTipos()->get_id(),
             "descripcion" => $ArchivoCargado->get_descripcion(),
+            "fechaInicioCompartir" => $ArchivoCargado->get_fechaInicioCompartir(),
             "fechaFinCompartir" => $ArchivoCargado->get_fechaFinCompartir(),
             "cantidadDescarga" => $ArchivoCargado->get_cantidadDescarga(),
             "cantidadUsada" => $ArchivoCargado->get_cantidadUsada(),
@@ -70,15 +71,21 @@ class DescargaControl
         $date = new DateTime();
         $fecha_actual = $date->format('Y-m-d H:i:s');
         
-        if ($fecha_actual > $info["fechaFinCompartir"]) {
-            $this->set_error( "El tiempo para descargar expiró." );
-            return false;
-        }
-
-        if ($info["cantidadDescarga"] < $info["cantidadUsada"])
+        if ( $info["fechaFinCompartir"] != $info["fechaInicioCompartir"])
         {
-            $this->set_error( "Se alcanzó el límite de descargas." );
-            return false;
+            if ($fecha_actual > $info["fechaFinCompartir"]) {
+                $this->set_error( "El tiempo para descargar expiró." );
+                return false;
+            }
+        }
+        
+        if ( $info["cantidadDescarga"] != '0' )
+        {
+            if ($info["cantidadDescarga"] < $info["cantidadUsada"])
+            {
+                $this->set_error( "Se alcanzó el límite de descargas." );
+                return false;
+            }
         }
 
         return true;

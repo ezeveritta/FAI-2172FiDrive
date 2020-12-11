@@ -1,25 +1,15 @@
 <?php
-
 # Configuración de la página
 include_once("../../configuracion.php");
-$CONFIG["titulo"] = "Compartidos - FAI-2172";
+include_once("../../utiles/session.php");
+$datos = data_submitted();
 
-# Cargo contenido
-include_once("estructura/cabecera.php");
-
-# Verifico si hay una sesión logeada
-if (!$logueado)
-{
-    header('Location: login.php');
-    die();
-}
-
-# Cargo contenido
-include_once("../modelos/ArchivoCargadoEstado.php");
-include_once("../modelos/ArchivoCargado.php");
+# Cargo clases a utilizar
 include_once("../modelos/EstadoTipos.php");
-include_once("../modelos/BaseDatos.php");
+include_once("../modelos/ArchivoCargado.php");
+include_once("../modelos/ArchivoCargadoEstado.php");
 include_once("../controladores/CompartidosControl.php");
+$control = new CompartidosControl();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -30,25 +20,28 @@ include_once("../controladores/CompartidosControl.php");
 ////////// Vista donde el usuario vé los archivos que cargó
 ////////// 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Verifico acceso a la vista //////////////////////////////////////////////////////////////////////
+if (!$logueado)
+{
+    header('Location: login.php');
+    die();
+}
 
-$control = new CompartidosControl();
-
-// Datos de Get&Post
-$datos = data_submitted();
-
-// Obtengo un array de contenido ["archivos"]
-$contenido = $control->obtenerCompartidos($idusuario);
-
-// Si retorna "false": muestro error y seteo contenido=null
-if ($contenido === false) {
+# Si retorna "false": muestro error y seteo contenido=null
+if (false === $contenido = $control->obtenerCompartidos($idusuario)) {
     $contenido = null;
     $datos['error'] = $control->get_error();
 }
 
-// Reordeno el contenido
+# Reordeno el contenido
 if (isset($datos['orden']) &&  isset($datos['direccion']))
     $contenido = $control->ordenarContenido("archivos", $contenido, $datos['orden'], $datos['direccion']);
 
+# Configuración de la vista
+$CONFIG["titulo"] = "Compartidos - FAI-2172";
+
+# Inicio HTML
+include_once("estructura/cabecera.php");
 echo get_aviso($datos); 
 ?>
         <!-- Contenido -->
@@ -73,7 +66,7 @@ echo get_aviso($datos);
                                 <!-- Cargar Archivo -->
                                 <li class="nav-item">
                                     <form action="amarchivo.php" method="post">
-                                        <input type="hidden" name="ruta" value="<?php echo "archivos" ?>">
+                                        <input type="hidden" name="ruta" value="<?php echo "$idusuario/archivos" ?>">
                                         <input type="hidden" name="clave" value="0">
                                         <button type="submit" class="btn btn-sm ml-3 p-2" style="border-radius: 10px; background: #d4cea3; color: #fff">
                                             <i class="fa fa-upload pl-4"></i>

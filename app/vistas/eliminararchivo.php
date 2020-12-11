@@ -1,12 +1,15 @@
 <?php
+# Configuración de la página
+include_once("../../configuracion.php");
+include_once("../../utiles/session.php");
+$datos = data_submitted();
 
-$sitio_titulo = "Eliminar Archivo - FAI-2172";
-include_once("estructura/cabecera.php");
-
+# Cargo contenido
 include_once("../modelos/EstadoTipos.php");
 include_once("../modelos/ArchivoCargado.php");
 include_once("../modelos/ArchivoCargadoEstado.php");
 include_once("../controladores/EliminarArchivoControl.php");
+$control = new EliminarArchivoControl();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -17,42 +20,38 @@ include_once("../controladores/EliminarArchivoControl.php");
 ////////// Vista donde el usuario puede eliminar un archivo
 ////////// 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// Verifico si el cliente está logeado
-if (!$loggeado)
+// Verifico acceso a la vista //////////////////////////////////////////////////////////////////////
+if (!$logueado)
 {
     header('Location: login.php');
     die();
 }
 
-// Obtengo datos
-$datos = data_submitted();
-
-$control = new EliminarArchivoControl();
-
-// Si no hay identificador del archivo, vuelvo a la vista "contenido"
+# Si no hay identificador del archivo, vuelvo a la vista "compartidos"
 if ( !isset($datos['id']) ) {
-    header("Location: contenido.php?error=Se esperaba un identificador.");
+    header("Location: compartidos.php?error=Se esperaba un identificador.");
     die;
 }
 
-// Obtengo información de
-$info = $control->get_info($datos);
-
-// Verifico que se encontró un registro en la BD
-if ($info == null) {
+#  Verifico que se encontró un registro en la BD
+if ( null === $info = $control->get_info($datos) ) {
     header("Location: contenido.php?error={$control->get_error()}");
     die;
 }
 
-// Defino variables para mayor comodidad
+# Defino variables para mayor comodidad
 $idArchivoCargado       = $info['idArchivoCargado'];
 $idArchivoCargadoEstado = $info['idArchivoCargadoEstado'];
 $archivo = $info['archivo'];
-$nombre  = $info['nombre'];
+$nombre  = nombreArchivo($info['nombre']);
+$user  = $info['usuario'];
 
-// Errores, alertas, exitos
-echo get_aviso($datos);
+# Configuración de la vista
+$CONFIG["titulo"] = "Eliminar Archivo - FAI-2172";
+
+# Inicio HTML
+include_once("estructura/cabecera.php");
+echo get_aviso($datos); 
 ?>
 
 <!-- Contenido -->
@@ -65,20 +64,20 @@ echo get_aviso($datos);
                     <div class="row p-4">
                         <h4 class="text-center w-100 pb-3">Eliminar las opciones de compartir un Archivo</h4>
 
-                        <div class="form-group mt-2 col-sm-12">
+                        <div class="form-group mt-2 col-sm-6">
                             <h6><label class="">Nombre de Archivo</label></h6>
                             <div class="border rounded form-control"><b><?php echo ($nombre) ? $nombre : "1234.png" ?></b></div>
                         </div>
 
-                        <div class="form-group mt-2 col-sm-12">
+                        <div class="form-group mt-2 col-sm-6">
                             <h6><label class="" for="usuario">Usuario</label></h6>
-                            <div class="border rounded form-control"><b><?php echo $usuario->get_login() ?></b></div>
+                            <div class="border rounded form-control"><b><?php echo $user ?></b></div>
                             <input type="hidden" name="usuario" value="<?php echo $usuario->get_id() ?>">
                         </div>
 
                         <div class="form-group mt-2 col-sm-12">
                             <h6><label class="" for="motivo">Motivo de eliminación</label></h6>
-                            <textarea name="motivo" id="motivo" class="form-control" rows="6" style="min-height:55px"></textarea>
+                            <textarea name="motivo" id="motivo" class="form-control" rows="6" style="min-height:55px" autofocus require></textarea>
                             <div class="invalid-feedback"></div>
                         </div>
 

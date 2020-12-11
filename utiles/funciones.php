@@ -87,6 +87,17 @@ function nombreArchivo(string $path)
 }
 
 /**
+ * Ésta función obtiene la ruta de un archivo según su path
+ * @param string $path
+ * @return string
+ */
+function rutaArchivo(string $path)
+{
+	$archivo = pathinfo($path); 
+	return $archivo['dirname'];
+}
+
+/**
  * Ésta función acorta un string para que no sobrepase el tamaño de su contenedor html
  * @param string $string Texto a acortar
  * @return string

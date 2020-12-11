@@ -23,9 +23,9 @@ if ($CONFIG["validator"][0])
   <!-- Validator -->
   <script src="../../publico/js/validator-<?php echo $CONFIG["validator"][1] ?>.js"></script>
 
-<?php 
-} 
-?>
+<?php } if ($CONFIG["extensiones"]["md5"]) { ?>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
+<?php } ?>
 
 </body>
 </html>

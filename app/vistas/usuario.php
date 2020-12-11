@@ -2,13 +2,7 @@
 
 # Configuración de la página
 include_once("../../configuracion.php");
-$CONFIG["titulo"] = "Usuario - FAI-2172";
-$CONFIG["cabecera"] = false;
-$CONFIG["menu"] = false;
-$CONFIG["pie"] = false;
-
-# Cargo contenido
-include_once("estructura/cabecera.php");
+include_once("../../utiles/session.php");
 
 # Verifico si hay una sesión logeada
 if ($logueado)
@@ -27,6 +21,14 @@ if ($logueado)
 ////////// 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+# Configuración de la vista
+$CONFIG["titulo"] = "Usuario - FAI-2172";
+$CONFIG["cabecera"] = false;
+$CONFIG["menu"] = false;
+$CONFIG["pie"] = false;
+
+# Inicio HTML
+include_once("estructura/cabecera.php");
 
 ?>
         <!-- Contenido -->

@@ -1,25 +1,15 @@
 <?php
-
 # Configuración de la página
 include_once("../../configuracion.php");
-$CONFIG["titulo"] = "Alta-Modificación - FAI-2172";
-$CONFIG["extensiones"]["summernote"] = true;
-
-# Cargo contenido
-include_once("estructura/cabecera.php");
-
-# Verifico si hay una sesión logeada
-if (!$logueado)
-{
-    header('Location: login.php');
-    die();
-}
+include_once("../../utiles/session.php");
+$datos = data_submitted();
 
 # Cargo contenido
 include_once("../modelos/EstadoTipos.php");
 include_once("../modelos/ArchivoCargado.php");
 include_once("../modelos/ArchivoCargadoEstado.php");
 include_once("../controladores/AmarchivoControl.php");
+$control = new AmarchivoControl();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -30,17 +20,17 @@ include_once("../controladores/AmarchivoControl.php");
 ////////// Vista donde el usuario puede dar de alta un archivo ó bien modificar uno existente
 ////////// 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Verifico acceso a la vista //////////////////////////////////////////////////////////////////////
+if (!$logueado)
+{
+    header('Location: login.php');
+    die();
+}
 
-// Obtengo datos
-$datos = data_submitted();
-
-// Creo el controlador
-$control = new AmarchivoControl();
-
-// obtengo la información para utilizar en la página
+# Obtengo la información para utilizar en la página
 $info = $control->get_info($datos, $usuario->get_id());
 
-// seteo esa info en variables para mayor comodidad
+# Seteo esa info en variables para mayor comodidad
 $ruta = $info['ruta'];
 $nombre = $info['nombre'];
 $descripcion = $info['descripcion'];
@@ -48,8 +38,13 @@ $icono = $info['icono'];
 $clave = $info['clave'];
 $id = $info['id'];
 
-// Errores, alertas, exitos
-echo get_aviso($datos);
+# Configuración de la vista
+$CONFIG["titulo"] = "Alta-Modificación - FAI-2172";
+$CONFIG["extensiones"]["summernote"] = true;
+
+# Inicio HTML
+include_once("estructura/cabecera.php");
+echo get_aviso($datos); 
 ?>
 
         <!-- Contenido -->
